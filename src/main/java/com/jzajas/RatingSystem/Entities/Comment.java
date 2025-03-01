@@ -17,14 +17,15 @@ import java.util.Date;
 public class Comment {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long ID;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @Column(name = "message", nullable = true)
     private String message;
 
-    //    TODO foreign key definition
-    @Column(name = "author_id", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "author_id", nullable = false)
+//    @Column(name = "author_id", nullable = false)
     private User authorID;
 
     @Column(name = "created_at", nullable = false)

@@ -15,7 +15,7 @@ import java.util.Date;
 public class GameObject {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "title", nullable = false)
@@ -24,8 +24,10 @@ public class GameObject {
     @Column(name = "text", nullable = false)
     private String text;
 
-    @Column(name = "user_id", nullable = false)
-    private User user_id;
+    @ManyToOne
+    @JoinColumn(name = "author_id", nullable = false)
+//    @Column(name = "author_id", nullable = false)
+    private User authorID;
 
     @Column(name = "created_at", nullable = false)
     private Date createdAt;
