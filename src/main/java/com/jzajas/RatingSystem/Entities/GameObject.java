@@ -7,6 +7,10 @@ import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
+
+//TODO might want ot add a game field for easier sorting and querying
+
+
 @Data
 @Entity
 @Table(name = "game_objects")

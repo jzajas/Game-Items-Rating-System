@@ -1,12 +1,11 @@
 package com.jzajas.RatingSystem.Controllers;
 
 import com.jzajas.RatingSystem.Entities.Comment;
-import com.jzajas.RatingSystem.Entities.User;
 import com.jzajas.RatingSystem.Services.CommentService;
-import com.jzajas.RatingSystem.Services.UserService;
-import lombok.Builder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 @RestController
@@ -32,23 +31,44 @@ public class CommentController {
     }
 
     @GetMapping("/{userId}/comments")
-    public void listSellersComments(@PathVariable Long userId) {
+    public ResponseEntity<?> listSellersComments(@PathVariable Long userId) {
+        try {
+            List<Comment> allUserComments = commentService.findAllUserComments(userId);
+            return ResponseEntity.ok(allUserComments);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
 
     }
 
     @GetMapping("/{userId}/comments/{commentId}")
-    public void viewSpecificComment(@PathVariable Long userId, @PathVariable Long commentId) {
-
+    public ResponseEntity<?> viewSpecificComment(@PathVariable Long userId, @PathVariable Long commentId) {
+        try {
+            Comment comment = commentService.findCommentById(commentId);
+            return ResponseEntity.ok(comment);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
     }
 
-//    TODO only author can delete its own comment
+//    TODO only author can delete its own comment --> sessions
     @DeleteMapping("/{userId}/comments/{commentId}")
-    public void deleteComment(@PathVariable Long userId, @PathVariable Long commentId) {
-
+    public ResponseEntity<?> deleteComment(@PathVariable Long userId, @PathVariable Long commentId) {
+        try {
+            commentService.deleteCommentById(commentId);
+            return ResponseEntity.ok("Comment deleted successfully ");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
     }
 
-    @PutMapping("/{userId}/comments")
-    public void updateComment(@PathVariable Long userId) {
-
+    @PutMapping("/{userId}/comments/{commentID}")
+    public ResponseEntity<?> updateComment(@PathVariable Long userId, @PathVariable Long commentId, @RequestBody Comment comment) {
+        try {
+            Comment newComment = commentService.updateCommentById(commentId, comment);
+            return ResponseEntity.ok(newComment);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
     }
 }

@@ -6,8 +6,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
+//TODO might want to create separate auth controller for user authentication and authorisation
+
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/users")
 public class UserController {
 
     private final UserService userService;
@@ -15,22 +17,6 @@ public class UserController {
     public UserController(UserService userService) {
         this.userService = userService;
     }
-
-    @PostMapping("/forgot_password")
-    public void forgotPassword() {
-
-    }
-
-    @PostMapping("/reset")
-    public void resetPassword() {
-
-    }
-
-    @GetMapping("/check_code")
-    public void checkCode() {
-
-    }
-
 
     @PostMapping("/register")
     public ResponseEntity<?> createUser(@RequestBody User user) {
