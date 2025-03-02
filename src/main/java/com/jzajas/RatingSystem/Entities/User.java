@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.Date;
 
@@ -30,10 +31,17 @@ public class User {
     @Column(name = "email", nullable = false, unique = true)
     private String email;
 
+    @Temporal(TemporalType.TIMESTAMP) //timestamp = date + time
     @Column(name = "created_at", nullable = false)
     private Date createdAt;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
     private Role role;
+
+
+    @PrePersist
+    public void addDateToNewUser() {
+        this.createdAt = new Date();
+    }
 }

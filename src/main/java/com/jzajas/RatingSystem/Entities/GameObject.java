@@ -32,6 +32,7 @@ public class GameObject {
     @Column(name = "created_at", nullable = false)
     private Date createdAt;
 
+//    TODO might want to add an "entity lifecycle event"
     @Column(name = "updated_at", nullable = false)
     private Date updatedAt;
 }

@@ -14,7 +14,7 @@ public class GameObjectController {
     }
 
 //    TODO only owner can edit object
-    @PutMapping("/{id}")
+    @PutMapping("/{objectId}")
     public void editObject(@PathVariable Long objectId) {
 
     }
@@ -30,7 +30,7 @@ public class GameObjectController {
     }
 
 //    TODO only owner can delete object
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{userId}")
     public void deleteObject(@PathVariable Long userId) {
 
     }

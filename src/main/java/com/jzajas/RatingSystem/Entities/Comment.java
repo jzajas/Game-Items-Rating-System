@@ -28,6 +28,16 @@ public class Comment {
 //    @Column(name = "author_id", nullable = false)
     private User authorID;
 
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at", nullable = false)
     private Date createdAt;
+
+    @Column(name = "rating", nullable = false)
+    private int rating;
+
+
+    @PrePersist
+    public void addNewDateToComment() {
+        this.createdAt = new Date();
+    }
 }

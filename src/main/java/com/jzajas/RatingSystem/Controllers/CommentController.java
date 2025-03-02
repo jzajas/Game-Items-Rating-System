@@ -1,7 +1,11 @@
 package com.jzajas.RatingSystem.Controllers;
 
+import com.jzajas.RatingSystem.Entities.Comment;
+import com.jzajas.RatingSystem.Entities.User;
 import com.jzajas.RatingSystem.Services.CommentService;
+import com.jzajas.RatingSystem.Services.UserService;
 import lombok.Builder;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -16,28 +20,34 @@ public class CommentController {
         this.commentService = commentService;
     }
 
-    @PostMapping("/users/{id}/comments")
-    public void addCommentForUser(@PathVariable Long userId) {
+    @PostMapping("/{userId}/comments")
+    public ResponseEntity<?> addCommentForUser(@PathVariable Long userId, @RequestBody Comment comment) {
+        try {
+            Comment savedComment = commentService.createNewComment(comment, userId);
+            return ResponseEntity.ok(savedComment);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
 
+        }
     }
 
-    @GetMapping("/users/{id}/comments")
+    @GetMapping("/{userId}/comments")
     public void listSellersComments(@PathVariable Long userId) {
 
     }
 
-    @GetMapping("/users/{id}/comments/{id}")
-    public void viewSpecificComment(@PathVariable Long userId, @PathVariable Long commentID) {
+    @GetMapping("/{userId}/comments/{commentId}")
+    public void viewSpecificComment(@PathVariable Long userId, @PathVariable Long commentId) {
 
     }
 
 //    TODO only author can delete its own comment
-    @DeleteMapping("/users/{id}/comments/{id}")
-    public void deleteComment(@PathVariable Long userId, @PathVariable Long commentID) {
+    @DeleteMapping("/{userId}/comments/{commentId}")
+    public void deleteComment(@PathVariable Long userId, @PathVariable Long commentId) {
 
     }
 
-    @PutMapping("/users/{id}/comments")
+    @PutMapping("/{userId}/comments")
     public void updateComment(@PathVariable Long userId) {
 
     }

@@ -1,10 +1,9 @@
 package com.jzajas.RatingSystem.Controllers;
 
+import com.jzajas.RatingSystem.Entities.User;
 import com.jzajas.RatingSystem.Services.UserService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 
 @RestController
@@ -30,5 +29,16 @@ public class UserController {
     @GetMapping("/check_code")
     public void checkCode() {
 
+    }
+
+
+    @PostMapping("/register")
+    public ResponseEntity<?> createUser(@RequestBody User user) {
+        try {
+            User savedUser = userService.createNewUser(user);
+            return ResponseEntity.ok(savedUser);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
     }
 }
