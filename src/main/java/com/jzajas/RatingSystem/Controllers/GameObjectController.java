@@ -1,6 +1,5 @@
 package com.jzajas.RatingSystem.Controllers;
 
-import com.jzajas.RatingSystem.Entities.Comment;
 import com.jzajas.RatingSystem.Entities.GameObject;
 import com.jzajas.RatingSystem.Services.GameObjectService;
 import org.springframework.http.ResponseEntity;
@@ -14,8 +13,19 @@ public class GameObjectController {
 
     private final GameObjectService gameObjectService;
 
+
     public GameObjectController(GameObjectService gameObjectService) {
         this.gameObjectService = gameObjectService;
+    }
+
+    @PostMapping("/")
+    public ResponseEntity<?> addNewGameObject(@RequestBody GameObject gameObject) {
+        try {
+            GameObject savedGameObject = gameObjectService.createNewGameObject(gameObject);
+            return ResponseEntity.ok(savedGameObject);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
     }
 
 //    TODO only owner can edit object
@@ -24,16 +34,6 @@ public class GameObjectController {
         try {
             GameObject newGameObject = gameObjectService.updateGameObject(objectId, gameObject);
             return ResponseEntity.ok(newGameObject);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
-        }
-    }
-
-    @PostMapping("/")
-    public ResponseEntity<?> addNewGameObject(@RequestBody GameObject gameObject) {
-        try {
-            GameObject savedGameObject = gameObjectService.createNewGameObject(gameObject);
-            return ResponseEntity.ok(savedGameObject);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());
         }
@@ -54,7 +54,7 @@ public class GameObjectController {
     public ResponseEntity<?> deleteGameObject(@PathVariable Long gameObjectId) {
         try {
             gameObjectService.deleteGameObjectById(gameObjectId);
-            return ResponseEntity.ok("Comment deleted successfully ");
+            return ResponseEntity.ok("Object deleted successfully ");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());
         }

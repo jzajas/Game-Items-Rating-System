@@ -45,6 +45,7 @@ public class GameObject {
     @PrePersist
     public void addDateToNewObject() {
         this.createdAt = new Date();
+        this.updatedAt = new Date();
     }
 
     @PreUpdate

@@ -1,6 +1,7 @@
 package com.jzajas.RatingSystem.Services;
 
 import com.jzajas.RatingSystem.Entities.GameObject;
+import com.jzajas.RatingSystem.Entities.User;
 import com.jzajas.RatingSystem.Repositories.GameObjectRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,10 @@ public class GameObjectService {
                 .findById(objectId)
                 .orElseThrow(() -> new IllegalArgumentException("Object with provided id does not exist"));
 
+//        Basic author authentication
+        if (!oldGameObject.getAuthorID().getId().equals(newGameObject.getAuthorID().getId())) {
+            throw new RuntimeException("Only user that created object can edit it");
+        }
         oldGameObject.setTitle(newGameObject.getTitle());
         oldGameObject.setText(newGameObject.getText());
 

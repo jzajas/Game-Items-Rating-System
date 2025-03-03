@@ -49,7 +49,7 @@ public class CommentController {
         }
     }
 
-//    TODO only author can delete its own comment --> sessions
+//    TODO only author can delete its own comment --> sessions?
     @DeleteMapping("/{userId}/comments/{commentId}")
     public ResponseEntity<?> deleteComment(@PathVariable Long userId, @PathVariable Long commentId) {
         try {
