@@ -33,10 +33,22 @@ public class GameObject {
 //    @Column(name = "author_id", nullable = false)
     private User authorID;
 
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at", nullable = false)
     private Date createdAt;
 
-//    TODO might want to add an "entity lifecycle event"
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "updated_at", nullable = false)
     private Date updatedAt;
+
+
+    @PrePersist
+    public void addDateToNewObject() {
+        this.createdAt = new Date();
+    }
+
+    @PreUpdate
+    public void updateDateOfObject() {
+        this.updatedAt = new Date();
+    }
 }

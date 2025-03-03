@@ -26,7 +26,6 @@ public class CommentController {
             return ResponseEntity.ok(savedComment);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());
-
         }
     }
 
@@ -38,7 +37,6 @@ public class CommentController {
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());
         }
-
     }
 
     @GetMapping("/{userId}/comments/{commentId}")
@@ -62,7 +60,7 @@ public class CommentController {
         }
     }
 
-    @PutMapping("/{userId}/comments/{commentID}")
+    @PutMapping("/{userId}/comments/{commentId}")
     public ResponseEntity<?> updateComment(@PathVariable Long userId, @PathVariable Long commentId, @RequestBody Comment comment) {
         try {
             Comment newComment = commentService.updateCommentById(commentId, comment);

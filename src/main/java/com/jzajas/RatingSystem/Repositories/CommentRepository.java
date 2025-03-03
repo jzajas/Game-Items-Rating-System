@@ -9,10 +9,6 @@ import java.util.List;
 
 public interface CommentRepository extends JpaRepository<Comment, Long> {
 
-    @Query(value = "SELECT * FROM comments WHERE author_id = :userId",nativeQuery = true)
-    List<Comment> findAllByUserId(@Param("userId") Long userId);
-
-//    @Query(value = "SELECT * FROM comments WHERE author_id = :userId",nativeQuery = true)
-//    List<Comment> findAllByUserId(@Param("userId") Long userId);
-//    Comment findById(Long id);
+    @Query(value = "SELECT * FROM comments WHERE author_id = :userId", nativeQuery = true)
+    List<Comment> findAllCommentsByUserId(@Param("userId") Long userId);
 }

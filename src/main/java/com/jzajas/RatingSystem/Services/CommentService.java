@@ -7,7 +7,6 @@ import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class CommentService {
@@ -16,11 +15,13 @@ public class CommentService {
     private final UserService userService;
 
 
+//    TODO userService might be a optional dependency -> not in a constructor but in a setter
     public CommentService(CommentRepository commentRepository, UserService userService) {
         this.commentRepository = commentRepository;
         this.userService = userService;
     }
 
+//    TODO if the user is not found then there can be a prompt to log in/ set up account -> one of the scenarios
     @Transactional
     public Comment createNewComment(Comment comment, Long userId) {
         try{
@@ -32,24 +33,18 @@ public class CommentService {
                 throw new IllegalArgumentException("Illegal value of rating");
             }
         } catch (IllegalArgumentException iae) {
-            throw new RuntimeException(iae.getMessage());
+            throw new IllegalArgumentException(iae.getMessage());
         }
     }
 
     public List<Comment> findAllUserComments(Long id) {
-        return commentRepository.findAllByUserId(id);
+        return commentRepository.findAllCommentsByUserId(id);
     }
 
     public Comment findCommentById(Long id) {
-//        Optional<Comment> comment = commentRepository.findById(id);
         return commentRepository
                 .findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Comment with that ID does not exist"));
-//        if(comment.isPresent()) {
-//            return comment.get();
-//        } else {
-//            throw new IllegalArgumentException("Comment with that ID does not exist");
-//        }
     }
 
     public void deleteCommentById(Long id) {
@@ -58,29 +53,19 @@ public class CommentService {
 
     @Transactional
     public Comment updateCommentById(Long id, Comment newComment) {
+        Comment oldComment = commentRepository
+                .findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Comment with this id does not exist"));
 
-        //        Comment oldComment = commentRepository
-//                .findById(id)
-//                .orElseThrow(() -> new IllegalArgumentException("Comment with this id does not exist"));
-//
-//        oldComment.setMessage(newComment.getMessage());
-//        if (isRatingValid(newComment.getRating())) {
-//            oldComment.setRating(newComment.getRating());
-//        } else {
-//            throw new IllegalArgumentException("Provided rating is not within bounds (1-10)");
-//        }
-//        return commentRepository.save(oldComment);
+        oldComment.setMessage(newComment.getMessage());
 
+        if (isRatingValid(newComment.getRating())) {
+            oldComment.setRating(newComment.getRating());
+        } else {
+            throw new IllegalArgumentException("Provided rating is not within bounds (1-10)");
+        }
 
-        return commentRepository.findById(id)
-                .map(comment -> {
-                    comment.setRating(newComment.getRating());
-                    comment.setMessage(newComment.getMessage());
-                    return commentRepository.save(comment);
-                })
-                .orElseGet(() -> {
-                    return commentRepository.save(newComment);
-                });
+        return commentRepository.save(oldComment);
     }
 
     private boolean isRatingValid(int rating) {

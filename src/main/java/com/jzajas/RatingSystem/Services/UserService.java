@@ -5,7 +5,6 @@ import com.jzajas.RatingSystem.Repositories.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
 
 @Service
 public class UserService {
@@ -25,12 +24,9 @@ public class UserService {
     }
 
     public User findUserByID(Long id) {
-        Optional<User> user = userRepository.findById(id);
-        if (user.isPresent()) {
-            return user.get();
-        } else {
-            throw new IllegalArgumentException("User with that id does not exist");
-        }
+        return userRepository
+                .findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("User with that ID does not exist"));
     }
 
     private boolean emailAlreadyExists(String email) {
