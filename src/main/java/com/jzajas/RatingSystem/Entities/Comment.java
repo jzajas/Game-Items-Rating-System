@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
-//TODO might want to add rating field or something like that
 
 @Data
 @Entity
@@ -23,10 +22,16 @@ public class Comment {
     @Column(name = "message", nullable = true)
     private String message;
 
+//    TODO author_id is nullable because anonymous user can comment on sellers profile
     @ManyToOne
-    @JoinColumn(name = "author_id", nullable = false)
-//    @Column(name = "author_id", nullable = false)
+    @JoinColumn(name = "author_id", nullable = true)
+//    @Column(name = "author_id", nullable = true)
     private User authorID;
+
+    @ManyToOne
+    @JoinColumn(name = "comment_receiver", nullable = false)
+//    @Column(name = "comment_receiver", nullable = false)
+    private User commentReceiver;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at", nullable = false)
