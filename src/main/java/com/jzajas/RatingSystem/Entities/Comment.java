@@ -22,7 +22,6 @@ public class Comment {
     @Column(name = "message", nullable = true)
     private String message;
 
-//    TODO author_id is nullable because anonymous user can comment on sellers profile
     @ManyToOne
     @JoinColumn(name = "author_id", nullable = true)
 //    @Column(name = "author_id", nullable = true)

@@ -1,12 +1,10 @@
 package com.jzajas.RatingSystem.Services;
 
 import com.jzajas.RatingSystem.Entities.GameObject;
-import com.jzajas.RatingSystem.Entities.User;
 import com.jzajas.RatingSystem.Repositories.GameObjectRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
 import java.util.List;
 
 @Service
@@ -24,6 +22,7 @@ public class GameObjectService {
     }
 
 //    TODO only author can edit -> might want to modify an endpoint
+//     or something from sessions (current logged user == author_id)
     @Transactional
     public GameObject updateGameObject(Long objectId, GameObject newGameObject) {
         GameObject oldGameObject = gameObjectRepository

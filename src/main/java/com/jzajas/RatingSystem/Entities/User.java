@@ -7,6 +7,9 @@ import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
+
+//TODO might want to add a rating field for easier querrying for top sellers
+
 @Data
 @Entity
 @Table(name = "users")

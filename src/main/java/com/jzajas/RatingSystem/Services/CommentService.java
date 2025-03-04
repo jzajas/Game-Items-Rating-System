@@ -38,9 +38,9 @@ public class CommentService {
         }
     }
 
-//    TODO Should return comments where the id matches the receiver id and not the author id
     public List<Comment> findAllUserComments(Long id) {
-        return commentRepository.findAllCommentsByUserId(id);
+//        return commentRepository.findAllCommentsByUserId(id);
+        return userService.getAllCommentsForUSerById(id);
     }
 
     public Comment findCommentById(Long id) {
@@ -66,7 +66,6 @@ public class CommentService {
         } else {
             throw new IllegalArgumentException("Provided rating is not within bounds (1-10)");
         }
-
         return commentRepository.save(oldComment);
     }
 

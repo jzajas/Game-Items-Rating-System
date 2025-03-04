@@ -9,10 +9,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
-
-//TODO make and exception for providing incorrect id for user (and/ or comment and game object);
+//TODO make custom exception for providing incorrect id for user (and/ or comment and game object);
 
 @Service
 public class UserService {
@@ -43,8 +41,8 @@ public class UserService {
                 .findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("User with provided ID does not exist"));
 
-        List<Comment> commentList = userRepository.findAllCommentsForUserById(user.getId());
-        commentList.forEach(x -> log.info(x.toString()));
+//        List<Comment> commentList = userRepository.findAllCommentsForUserById(user.getId());
+        List<Comment> commentList = getAllCommentsForUSerById(user.getId());
 
         double rating = commentList.stream()
                 .mapToDouble(Comment::getRating)
@@ -52,6 +50,10 @@ public class UserService {
                 .orElse(0);
 
         return rating;
+    }
+
+    public List<Comment> getAllCommentsForUSerById(Long id) {
+        return userRepository.findAllCommentsForUserById(id);
     }
 
     private boolean emailAlreadyExists(String email) {
