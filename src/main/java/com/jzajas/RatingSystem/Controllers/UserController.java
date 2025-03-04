@@ -6,8 +6,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
-//TODO might want to create separate auth controller for user authentication and authorisation
-
 @RestController
 @RequestMapping("/users")
 public class UserController {
@@ -23,6 +21,16 @@ public class UserController {
         try {
             User savedUser = userService.createNewUser(user);
             return ResponseEntity.ok(savedUser);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/score/{userId}")
+    public ResponseEntity<?> getUserScore(@PathVariable Long userId) {
+        try {
+            double score = userService.calculateUserScore(userId);
+            return ResponseEntity.ok(score);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());
         }

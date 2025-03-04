@@ -22,21 +22,23 @@ public class CommentService {
     }
 
 //    TODO if the user is not found then there can be a prompt to log in/ set up account -> one of the scenarios
+//    TODO posting user id, and receiving user id  should not be in the payload?
     @Transactional
     public Comment createNewComment(Comment comment, Long userId) {
-        try{
-            User user = userService.findUserByID(userId);
-            comment.setAuthorID(user);
-            if (isRatingValid(comment.getRating())) {
+        if (isRatingValid(comment.getRating())) {
+            try {
+                User user = userService.findUserById(userId);
+                comment.setCommentReceiver(user);
                 return commentRepository.save(comment);
-            } else {
-                throw new IllegalArgumentException("Illegal value of rating");
+            } catch (IllegalArgumentException iae) {
+                throw new IllegalArgumentException(iae.getMessage());
             }
-        } catch (IllegalArgumentException iae) {
-            throw new IllegalArgumentException(iae.getMessage());
+        } else {
+            throw new IllegalArgumentException("Illegal value of rating");
         }
     }
 
+//    TODO Should return comments where the id matches the receiver id and not the author id
     public List<Comment> findAllUserComments(Long id) {
         return commentRepository.findAllCommentsByUserId(id);
     }
