@@ -2,6 +2,7 @@ package com.jzajas.RatingSystem.Controllers;
 
 import com.jzajas.RatingSystem.Entities.GameObject;
 import com.jzajas.RatingSystem.Services.GameObjectService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,44 +20,28 @@ public class GameObjectController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<?> addNewGameObject(@RequestBody GameObject gameObject) {
-        try {
-            GameObject savedGameObject = gameObjectService.createNewGameObject(gameObject);
-            return ResponseEntity.ok(savedGameObject);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
-        }
+    public ResponseEntity<Void> addNewGameObject(@RequestBody GameObject gameObject) {
+        gameObjectService.createNewGameObject(gameObject);
+        return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
+    @GetMapping("/")
+    public ResponseEntity<List<GameObject>> getGameObjects() {
+        List<GameObject> allGameObjects = gameObjectService.getAllGameObjects();
+        return ResponseEntity.ok(allGameObjects);
     }
 
 //    TODO only owner can edit object
     @PutMapping("/{objectId}")
-    public ResponseEntity<?> editGameObject(@PathVariable Long objectId, @RequestBody GameObject gameObject) {
-        try {
-            GameObject newGameObject = gameObjectService.updateGameObject(objectId, gameObject);
-            return ResponseEntity.ok(newGameObject);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
-        }
-    }
-
-    @GetMapping("/")
-    public ResponseEntity<?> getGameObjects() {
-        try {
-            List<GameObject> allGameObjects = gameObjectService.getAllGameObjects();
-            return ResponseEntity.ok(allGameObjects);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
-        }
+    public ResponseEntity<Void> editGameObject(@PathVariable Long objectId, @RequestBody GameObject gameObject) {
+        gameObjectService.updateGameObject(objectId, gameObject);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 //    TODO only owner can delete object
     @DeleteMapping("/{gameObjectId}")
-    public ResponseEntity<?> deleteGameObject(@PathVariable Long gameObjectId) {
-        try {
-            gameObjectService.deleteGameObjectById(gameObjectId);
-            return ResponseEntity.ok("Object deleted successfully ");
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
-        }
+    public ResponseEntity<Void> deleteGameObject(@PathVariable Long gameObjectId) {
+        gameObjectService.deleteGameObjectById(gameObjectId);
+        return ResponseEntity.noContent().build();
     }
 }

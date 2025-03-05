@@ -2,6 +2,7 @@ package com.jzajas.RatingSystem.Controllers;
 
 import com.jzajas.RatingSystem.Entities.User;
 import com.jzajas.RatingSystem.Services.UserService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,22 +18,23 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> createUser(@RequestBody User user) {
-        try {
-            User savedUser = userService.createNewUser(user);
-            return ResponseEntity.ok(savedUser);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
-        }
+    public ResponseEntity<Void> createUser(@RequestBody User user) {
+        userService.createNewUser(user);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @GetMapping("/score/{userId}")
-    public ResponseEntity<?> getUserScore(@PathVariable Long userId) {
-        try {
-            double score = userService.calculateUserScore(userId);
-            return ResponseEntity.ok(score);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
-        }
+    public ResponseEntity<Double> getUserScore(@PathVariable Long userId) {
+        Double score = userService.calculateUserScore(userId);
+        return ResponseEntity.ok(score);
+    }
+    
+//    TODO @RequestParam might be got for specifying how many sellers to display
+    @GetMapping("/score")
+    public void getTopSellers(RequestParam display) {
+//    public ResponseEntity<Double> getTopSellers(RequestParam display) {
+//        double score = userService.calculateUserScore(userId);
+//        return ResponseEntity.ok(score);
+
     }
 }

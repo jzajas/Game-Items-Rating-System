@@ -4,18 +4,15 @@ import com.jzajas.RatingSystem.Entities.Comment;
 import com.jzajas.RatingSystem.Entities.User;
 import com.jzajas.RatingSystem.Repositories.UserRepository;
 import jakarta.transaction.Transactional;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-//TODO make custom exception for providing incorrect id for user (and/ or comment and game object);
+//TODO make custom exception for providing incorrect id for user, comment and game object;
 
 @Service
 public class UserService {
 
-    private static final Logger log = LoggerFactory.getLogger(UserService.class);
     private final UserRepository userRepository;
 
     public UserService(UserRepository userRepository) {
@@ -23,11 +20,11 @@ public class UserService {
     }
 
     @Transactional
-    public User createNewUser(User user) {
+    public void createNewUser(User user) {
         if (emailAlreadyExists(user.getEmail())) {
             throw new IllegalArgumentException("Email already in use");
         }
-        return userRepository.save(user);
+        userRepository.save(user);
     }
 
     public User findUserById(Long id) {
@@ -37,22 +34,18 @@ public class UserService {
     }
 
     public double calculateUserScore(Long id) {
-        User user = userRepository
-                .findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("User with provided ID does not exist"));
+        List<Comment> commentList = getAllCommentsForUserById(id);
 
-//        List<Comment> commentList = userRepository.findAllCommentsForUserById(user.getId());
-        List<Comment> commentList = getAllCommentsForUSerById(user.getId());
-
-        double rating = commentList.stream()
+        if (commentList.isEmpty()) {
+            return 0.0;
+        }
+        return commentList.stream()
                 .mapToDouble(Comment::getRating)
                 .average()
                 .orElse(0);
-
-        return rating;
     }
 
-    public List<Comment> getAllCommentsForUSerById(Long id) {
+    public List<Comment> getAllCommentsForUserById(Long id) {
         return userRepository.findAllCommentsForUserById(id);
     }
 

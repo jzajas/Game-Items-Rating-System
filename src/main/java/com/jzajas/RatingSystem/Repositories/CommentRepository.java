@@ -7,8 +7,9 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
+
 public interface CommentRepository extends JpaRepository<Comment, Long> {
 
-//    @Query(value = "SELECT * FROM comments WHERE comment_receiver = :userId", nativeQuery = true)
-//    List<Comment> findAllCommentsByUserId(@Param("userId") Long userId);
+    @Query(value = "SELECT * FROM comments WHERE comment_receiver = :userId", nativeQuery = true)
+    List<Comment> findAllCommentsByUserId(@Param("userId") Long userId);
 }

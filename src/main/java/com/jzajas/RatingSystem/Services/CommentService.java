@@ -15,7 +15,6 @@ public class CommentService {
     private final UserService userService;
 
 
-//    TODO userService might be a optional dependency -> not in a constructor but in a setter
     public CommentService(CommentRepository commentRepository, UserService userService) {
         this.commentRepository = commentRepository;
         this.userService = userService;
@@ -24,12 +23,12 @@ public class CommentService {
 //    TODO if the user is not found then there can be a prompt to log in/ set up account -> one of the scenarios
 //    TODO posting user id, and receiving user id  should not be in the payload?
     @Transactional
-    public Comment createNewComment(Comment comment, Long userId) {
+    public void createNewComment(Comment comment, Long userId) {
         if (isRatingValid(comment.getRating())) {
             try {
                 User user = userService.findUserById(userId);
                 comment.setCommentReceiver(user);
-                return commentRepository.save(comment);
+                commentRepository.save(comment);
             } catch (IllegalArgumentException iae) {
                 throw new IllegalArgumentException(iae.getMessage());
             }
@@ -39,8 +38,8 @@ public class CommentService {
     }
 
     public List<Comment> findAllUserComments(Long id) {
-//        return commentRepository.findAllCommentsByUserId(id);
-        return userService.getAllCommentsForUSerById(id);
+        userService.findUserById(id);
+        return commentRepository.findAllCommentsByUserId(id);
     }
 
     public Comment findCommentById(Long id) {
@@ -54,7 +53,7 @@ public class CommentService {
     }
 
     @Transactional
-    public Comment updateCommentById(Long id, Comment newComment) {
+    public void updateCommentById(Long id, Comment newComment) {
         Comment oldComment = commentRepository
                 .findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Comment with this id does not exist"));
@@ -66,7 +65,7 @@ public class CommentService {
         } else {
             throw new IllegalArgumentException("Provided rating is not within bounds (1-10)");
         }
-        return commentRepository.save(oldComment);
+        commentRepository.save(oldComment);
     }
 
     private boolean isRatingValid(int rating) {

@@ -43,7 +43,10 @@ public class User {
 
 
     @PrePersist
-    public void addDateToNewUser() {
+    public void initializeNewUser() {
         this.createdAt = new Date();
+        if (this.role == null) {
+            this.role = Role.SELLER;
+        }
     }
 }
