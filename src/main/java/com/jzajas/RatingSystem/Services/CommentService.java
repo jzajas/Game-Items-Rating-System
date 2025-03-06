@@ -1,9 +1,12 @@
 package com.jzajas.RatingSystem.Services;
 
 import com.jzajas.RatingSystem.DTOs.CommentDTO;
+import com.jzajas.RatingSystem.DTOs.UserDTO;
 import com.jzajas.RatingSystem.Entities.Comment;
 import com.jzajas.RatingSystem.Entities.User;
+import com.jzajas.RatingSystem.Mappers.DTOMapper;
 import com.jzajas.RatingSystem.Repositories.CommentRepository;
+import com.jzajas.RatingSystem.Repositories.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -14,48 +17,47 @@ import java.util.stream.Collectors;
 public class CommentService {
 
     private final CommentRepository commentRepository;
-    private final UserService userService;
+//    private final UserService userService;
+    private final DTOMapper mapper;
+    private final UserRepository repo;
 
 
-    public CommentService(CommentRepository commentRepository, UserService userService) {
+    public CommentService(CommentRepository commentRepository, UserService userService, DTOMapper mapper, UserRepository repo) {
         this.commentRepository = commentRepository;
-        this.userService = userService;
-
+//        this.userService = userService;
+        this.mapper = mapper;
+        this.repo = repo;
     }
 
 //    TODO if the user is not found then there can be a prompt to log in/ set up account -> one of the scenarios
 //    TODO posting user id, and receiving user id  should not be in the payload?
     @Transactional
     public void createNewComment(Comment comment, Long userId) {
-        if (isRatingValid(comment.getRating())) {
-            try {
-                User user = userService.findUserById(userId);
-                comment.setReceiver(user);
-                commentRepository.save(comment);
-            } catch (IllegalArgumentException iae) {
-                throw new IllegalArgumentException(iae.getMessage());
-            }
+        if (isRatingValid(comment.getRating()) && repo.existsById(userId)) {
+            User user = repo.findById(userId).get();
+            comment.setReceiver(user);
+            commentRepository.save(comment);
         } else {
             throw new IllegalArgumentException("Illegal value of rating");
         }
     }
 
-//    TODO DTO
     public CommentDTO findCommentById(Long id) {
         Comment comment = commentRepository
                 .findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Comment with that ID does not exist"));
-        return convertToDTO(comment);
+        return mapper.convertToCommentDTO(comment);
     }
 
-//    TODO DTO
     public List<CommentDTO> findAllUserComments(Long id) {
-        userService.findUserById(id);
-
-        List<Comment> allComments =  commentRepository.findAllCommentsByUserId(id);
-        return allComments.stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
+        if(repo.existsById(id)) {
+            List<Comment> allComments =  commentRepository.findAllCommentsByUserId(id);
+            return allComments.stream()
+                    .map(mapper::convertToCommentDTO)
+                    .collect(Collectors.toList());
+        } else {
+            throw new IllegalArgumentException("User with that id does not exist");
+        }
     }
 
     @Transactional
@@ -76,19 +78,6 @@ public class CommentService {
 
     public void deleteCommentById(Long id) {
         commentRepository.deleteById(id);
-    }
-
-    private CommentDTO convertToDTO(Comment comment) {
-        CommentDTO dto = new CommentDTO();
-        dto.setMessage(comment.getMessage());
-        dto.setAuthorFirstName(comment.getAuthorID().getFirstName());
-        dto.setAuthorLastName(comment.getAuthorID().getLastName());
-        dto.setReceiverFirstName(comment.getReceiver().getFirstName());
-        dto.setReceiverLastName(comment.getReceiver().getLastName());
-        dto.setCreatedAt(comment.getCreatedAt());
-        dto.setRating(comment.getRating());
-
-        return dto;
     }
 
     private boolean isRatingValid(int rating) {
