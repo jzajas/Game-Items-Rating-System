@@ -1,5 +1,6 @@
 package com.jzajas.RatingSystem.Controllers;
 
+import com.jzajas.RatingSystem.DTOs.GameObjectDTO;
 import com.jzajas.RatingSystem.Entities.GameObject;
 import com.jzajas.RatingSystem.Services.GameObjectService;
 import org.springframework.http.HttpStatus;
@@ -26,8 +27,8 @@ public class GameObjectController {
     }
 
     @GetMapping("/")
-    public ResponseEntity<List<GameObject>> getGameObjects() {
-        List<GameObject> allGameObjects = gameObjectService.getAllGameObjects();
+    public ResponseEntity<List<GameObjectDTO>> getGameObjects() {
+        List<GameObjectDTO> allGameObjects = gameObjectService.getAllGameObjects();
         return ResponseEntity.ok(allGameObjects);
     }
 

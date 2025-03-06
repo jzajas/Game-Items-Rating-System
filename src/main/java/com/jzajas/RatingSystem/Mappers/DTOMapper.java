@@ -1,10 +1,14 @@
 package com.jzajas.RatingSystem.Mappers;
 
 import com.jzajas.RatingSystem.DTOs.CommentDTO;
+import com.jzajas.RatingSystem.DTOs.GameObjectDTO;
 import com.jzajas.RatingSystem.DTOs.UserDTO;
 import com.jzajas.RatingSystem.Entities.Comment;
+import com.jzajas.RatingSystem.Entities.GameObject;
 import com.jzajas.RatingSystem.Entities.User;
+import org.springframework.stereotype.Component;
 
+//@Component
 public class DTOMapper {
 
     public CommentDTO convertToCommentDTO(Comment comment) {
@@ -27,6 +31,16 @@ public class DTOMapper {
         dto.setFirstName(user.getFirstName());
         dto.setLastName(user.getLastName());
         dto.setCreatedAt(user.getCreatedAt());
+
+        return dto;
+    }
+
+    public GameObjectDTO convertToGameObjectDTO(GameObject gameObject) {
+        GameObjectDTO dto = new GameObjectDTO();
+
+        dto.setTitle(gameObject.getTitle());
+        dto.setText(gameObject.getText());
+        dto.setUpdatedAt(gameObject.getUpdatedAt());
 
         return dto;
     }

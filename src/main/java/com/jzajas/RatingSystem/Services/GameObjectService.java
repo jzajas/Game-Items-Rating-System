@@ -1,19 +1,24 @@
 package com.jzajas.RatingSystem.Services;
 
+import com.jzajas.RatingSystem.DTOs.GameObjectDTO;
 import com.jzajas.RatingSystem.Entities.GameObject;
+import com.jzajas.RatingSystem.Mappers.DTOMapper;
 import com.jzajas.RatingSystem.Repositories.GameObjectRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class GameObjectService {
 
     private final GameObjectRepository gameObjectRepository;
+    private final DTOMapper mapper;
 
-    public GameObjectService(GameObjectRepository gameObjectRepository) {
+    public GameObjectService(GameObjectRepository gameObjectRepository, DTOMapper mapper) {
         this.gameObjectRepository = gameObjectRepository;
+        this.mapper = mapper;
     }
 
 
@@ -21,8 +26,12 @@ public class GameObjectService {
         gameObjectRepository.save(newGameObject);
     }
 
-    public List<GameObject> getAllGameObjects() {
-        return gameObjectRepository.findAll();
+    public List<GameObjectDTO> getAllGameObjects() {
+        List<GameObject> allObjects = gameObjectRepository.findAll();
+        return allObjects
+                .stream()
+                .map(mapper::convertToGameObjectDTO)
+                .collect(Collectors.toList());
     }
 
 //    TODO only author can edit -> might want to modify an endpoint
