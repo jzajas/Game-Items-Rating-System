@@ -1,5 +1,6 @@
 package com.jzajas.RatingSystem.Services;
 
+import com.jzajas.RatingSystem.DTOs.CommentDTO;
 import com.jzajas.RatingSystem.Entities.Comment;
 import com.jzajas.RatingSystem.Entities.User;
 import com.jzajas.RatingSystem.Repositories.CommentRepository;
@@ -7,6 +8,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CommentService {
@@ -18,6 +20,7 @@ public class CommentService {
     public CommentService(CommentRepository commentRepository, UserService userService) {
         this.commentRepository = commentRepository;
         this.userService = userService;
+
     }
 
 //    TODO if the user is not found then there can be a prompt to log in/ set up account -> one of the scenarios
@@ -27,7 +30,7 @@ public class CommentService {
         if (isRatingValid(comment.getRating())) {
             try {
                 User user = userService.findUserById(userId);
-                comment.setCommentReceiver(user);
+                comment.setReceiver(user);
                 commentRepository.save(comment);
             } catch (IllegalArgumentException iae) {
                 throw new IllegalArgumentException(iae.getMessage());
@@ -37,19 +40,22 @@ public class CommentService {
         }
     }
 
-    public List<Comment> findAllUserComments(Long id) {
-        userService.findUserById(id);
-        return commentRepository.findAllCommentsByUserId(id);
-    }
-
-    public Comment findCommentById(Long id) {
-        return commentRepository
+//    TODO DTO
+    public CommentDTO findCommentById(Long id) {
+        Comment comment = commentRepository
                 .findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Comment with that ID does not exist"));
+        return convertToDTO(comment);
     }
 
-    public void deleteCommentById(Long id) {
-        commentRepository.deleteById(id);
+//    TODO DTO
+    public List<CommentDTO> findAllUserComments(Long id) {
+        userService.findUserById(id);
+
+        List<Comment> allComments =  commentRepository.findAllCommentsByUserId(id);
+        return allComments.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
 
     @Transactional
@@ -66,6 +72,23 @@ public class CommentService {
             throw new IllegalArgumentException("Provided rating is not within bounds (1-10)");
         }
         commentRepository.save(oldComment);
+    }
+
+    public void deleteCommentById(Long id) {
+        commentRepository.deleteById(id);
+    }
+
+    private CommentDTO convertToDTO(Comment comment) {
+        CommentDTO dto = new CommentDTO();
+        dto.setMessage(comment.getMessage());
+        dto.setAuthorFirstName(comment.getAuthorID().getFirstName());
+        dto.setAuthorLastName(comment.getAuthorID().getLastName());
+        dto.setReceiverFirstName(comment.getReceiver().getFirstName());
+        dto.setReceiverLastName(comment.getReceiver().getLastName());
+        dto.setCreatedAt(comment.getCreatedAt());
+        dto.setRating(comment.getRating());
+
+        return dto;
     }
 
     private boolean isRatingValid(int rating) {

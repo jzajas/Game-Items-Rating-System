@@ -1,5 +1,6 @@
 package com.jzajas.RatingSystem.Controllers;
 
+import com.jzajas.RatingSystem.DTOs.CommentDTO;
 import com.jzajas.RatingSystem.Entities.Comment;
 import com.jzajas.RatingSystem.Services.CommentService;
 import org.springframework.http.HttpStatus;
@@ -27,14 +28,14 @@ public class CommentController {
     }
 
     @GetMapping("/{userId}/comments")
-    public ResponseEntity<List<Comment>> listSellersComments(@PathVariable Long userId) {
-        List<Comment> allUserComments = commentService.findAllUserComments(userId);
+    public ResponseEntity<List<CommentDTO>> listSellersComments(@PathVariable Long userId) {
+        List<CommentDTO> allUserComments = commentService.findAllUserComments(userId);
         return ResponseEntity.ok(allUserComments);
     }
 
     @GetMapping("/{userId}/comments/{commentId}")
-    public ResponseEntity<Comment> viewSpecificComment(@PathVariable Long userId, @PathVariable Long commentId) {
-        Comment comment = commentService.findCommentById(commentId);
+    public ResponseEntity<CommentDTO> viewSpecificComment(@PathVariable Long userId, @PathVariable Long commentId) {
+        CommentDTO comment = commentService.findCommentById(commentId);
         return ResponseEntity.ok(comment);
     }
 

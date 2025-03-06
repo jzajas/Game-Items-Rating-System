@@ -24,13 +24,11 @@ public class Comment {
 
     @ManyToOne
     @JoinColumn(name = "author_id", nullable = true)
-//    @Column(name = "author_id", nullable = true)
     private User authorID;
 
     @ManyToOne
-    @JoinColumn(name = "comment_receiver", nullable = false)
-//    @Column(name = "comment_receiver", nullable = false)
-    private User commentReceiver;
+    @JoinColumn(name = "receiver", nullable = false)
+    private User receiver;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at", nullable = false)
