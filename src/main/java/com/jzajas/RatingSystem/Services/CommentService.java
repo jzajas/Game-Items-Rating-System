@@ -1,13 +1,12 @@
 package com.jzajas.RatingSystem.Services;
 
 import com.jzajas.RatingSystem.DTOs.CommentDTO;
-import com.jzajas.RatingSystem.DTOs.UserDTO;
 import com.jzajas.RatingSystem.Entities.Comment;
 import com.jzajas.RatingSystem.Entities.User;
 import com.jzajas.RatingSystem.Mappers.DTOMapper;
 import com.jzajas.RatingSystem.Repositories.CommentRepository;
 import com.jzajas.RatingSystem.Repositories.UserRepository;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -42,6 +41,7 @@ public class CommentService {
         }
     }
 
+    @Transactional(readOnly = true)
     public CommentDTO findCommentById(Long id) {
         Comment comment = commentRepository
                 .findById(id)
@@ -49,6 +49,7 @@ public class CommentService {
         return mapper.convertToCommentDTO(comment);
     }
 
+    @Transactional(readOnly = true)
     public List<CommentDTO> findAllUserComments(Long id) {
         if(repo.existsById(id)) {
             List<Comment> allComments =  commentRepository.findAllCommentsByUserId(id);
@@ -76,6 +77,7 @@ public class CommentService {
         commentRepository.save(oldComment);
     }
 
+    @Transactional
     public void deleteCommentById(Long id) {
         commentRepository.deleteById(id);
     }

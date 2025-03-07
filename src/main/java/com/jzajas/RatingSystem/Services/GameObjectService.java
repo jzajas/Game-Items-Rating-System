@@ -4,7 +4,7 @@ import com.jzajas.RatingSystem.DTOs.GameObjectDTO;
 import com.jzajas.RatingSystem.Entities.GameObject;
 import com.jzajas.RatingSystem.Mappers.DTOMapper;
 import com.jzajas.RatingSystem.Repositories.GameObjectRepository;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,10 +22,12 @@ public class GameObjectService {
     }
 
 
+    @Transactional
     public void createNewGameObject(GameObject newGameObject) {
         gameObjectRepository.save(newGameObject);
     }
 
+    @Transactional(readOnly = true)
     public List<GameObjectDTO> getAllGameObjects() {
         List<GameObject> allObjects = gameObjectRepository.findAll();
         return allObjects
@@ -51,6 +53,7 @@ public class GameObjectService {
         gameObjectRepository.save(oldGameObject);
     }
 
+    @Transactional
     public void deleteGameObjectById(Long gameObjectId) {
         gameObjectRepository.deleteById(gameObjectId);
     }

@@ -5,8 +5,8 @@ import com.jzajas.RatingSystem.Entities.Comment;
 import com.jzajas.RatingSystem.Entities.User;
 import com.jzajas.RatingSystem.Mappers.DTOMapper;
 import com.jzajas.RatingSystem.Repositories.UserRepository;
-import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -31,12 +31,14 @@ public class UserService {
         userRepository.save(user);
     }
 
+    @Transactional(readOnly = true)
     public User findUserById(Long id) {
         return userRepository
                 .findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("User with that ID does not exist"));
     }
 
+    @Transactional(readOnly = true)
     public UserDTO findUserDTOById(Long id){
         User user = userRepository
                 .findById(id)
@@ -44,6 +46,7 @@ public class UserService {
         return mapper.convertToUserDTO(user);
     }
 
+    @Transactional(readOnly = true)
     public List<Comment> getAllCommentsForUserById(Long id) {
         if (userRepository.existsById(id)) {
             return userRepository.findAllCommentsForUserById(id);
@@ -52,6 +55,7 @@ public class UserService {
         }
     }
 
+    @Transactional(readOnly = true)
     public double calculateUserScore(Long id) {
         List<Comment> commentList = getAllCommentsForUserById(id);
 
@@ -64,6 +68,7 @@ public class UserService {
                 .orElse(0);
     }
 
+    @Transactional(readOnly = true)
     private boolean emailAlreadyExists(String email) {
         return userRepository.findByEmail(email) != null;
     }
