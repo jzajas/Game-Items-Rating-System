@@ -15,8 +15,13 @@ public class DTOMapper {
         CommentDTO dto = new CommentDTO();
 
         dto.setMessage(comment.getMessage());
-        dto.setAuthorFirstName(comment.getAuthorID().getFirstName());
-        dto.setAuthorLastName(comment.getAuthorID().getLastName());
+        if (comment.getAuthorID() == null) {
+            dto.setAuthorFirstName(null);
+            dto.setAuthorLastName(null);
+        } else {
+            dto.setAuthorFirstName(comment.getAuthorID().getFirstName());
+            dto.setAuthorLastName(comment.getAuthorID().getLastName());
+        }
         dto.setReceiverFirstName(comment.getReceiver().getFirstName());
         dto.setReceiverLastName(comment.getReceiver().getLastName());
         dto.setCreatedAt(comment.getCreatedAt());

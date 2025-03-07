@@ -20,26 +20,35 @@ public class CommentService {
 
     private final CommentRepository commentRepository;
     private final DTOMapper mapper;
-    private final UserRepository repo;
+    private final UserRepository userRepository;
 
 
     public CommentService(CommentRepository commentRepository, DTOMapper mapper, UserRepository repo) {
         this.commentRepository = commentRepository;
         this.mapper = mapper;
-        this.repo = repo;
+        this.userRepository = repo;
     }
 
 //    TODO if the user is not found then there can be a prompt to log in/ set up account -> one of the scenarios
 //    TODO posting user id, and receiving user id  should not be in the payload?
     @Transactional
     public void createNewComment(Comment comment, Long userId) {
-        if (isRatingValid(comment.getRating()) && repo.existsById(userId)) {
-            User user = repo.findById(userId).get();
-            comment.setReceiver(user);
-            commentRepository.save(comment);
-        } else {
-            throw new InvalidRatingValueException();
+//        long commentReceiverId = comment.getReceiver().getId();
+//        if (!Objects.equals(commentReceiverId, userId)) {
+//            throw new BadRequestException(
+//                    "Comment receiver id (" + commentReceiverId + ") does not match the id (" + userId + ") from URL"
+//            );
+//        }
+        if (!isRatingValid(comment.getRating())) {
+            throw new InvalidRatingValueException(String.valueOf(comment.getRating()));
         }
+        if (!userRepository.existsById(userId)) {
+            throw new UserNotFoundException(userId);
+        }
+        User user = userRepository.findById(userId).get();
+        comment.setReceiver(user);
+        System.out.println(user);
+        commentRepository.save(comment);
     }
 
     @Transactional(readOnly = true)
@@ -52,7 +61,7 @@ public class CommentService {
 
     @Transactional(readOnly = true)
     public List<CommentDTO> findAllUserComments(Long id) {
-        if(repo.existsById(id)) {
+        if(userRepository.existsById(id)) {
             List<Comment> allComments =  commentRepository.findAllCommentsByUserId(id);
             return allComments.stream()
                     .map(mapper::convertToCommentDTO)

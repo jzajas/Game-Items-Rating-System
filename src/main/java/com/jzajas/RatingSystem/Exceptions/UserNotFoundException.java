@@ -12,6 +12,10 @@ public class UserNotFoundException extends RuntimeException {
         super(message);
     }
 
+    public UserNotFoundException(long id) {
+        super(String.valueOf(id));
+    }
+
     public UserNotFoundException(Throwable tr) {
         super(tr);
     }
