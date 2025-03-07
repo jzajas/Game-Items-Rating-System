@@ -3,6 +3,8 @@ package com.jzajas.RatingSystem.Services;
 import com.jzajas.RatingSystem.DTOs.UserDTO;
 import com.jzajas.RatingSystem.Entities.Comment;
 import com.jzajas.RatingSystem.Entities.User;
+import com.jzajas.RatingSystem.Exceptions.EmailAlreadyInUseException;
+import com.jzajas.RatingSystem.Exceptions.UserNotFoundException;
 import com.jzajas.RatingSystem.Mappers.DTOMapper;
 import com.jzajas.RatingSystem.Repositories.UserRepository;
 import org.springframework.stereotype.Service;
@@ -26,7 +28,7 @@ public class UserService {
     @Transactional
     public void createNewUser(User user) {
         if (emailAlreadyExists(user.getEmail())) {
-            throw new IllegalArgumentException("Email already in use");
+           throw new EmailAlreadyInUseException("Provided email is already in use");
         }
         userRepository.save(user);
     }
@@ -35,14 +37,14 @@ public class UserService {
     public User findUserById(Long id) {
         return userRepository
                 .findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("User with that ID does not exist"));
+                .orElseThrow(UserNotFoundException::new);
     }
 
     @Transactional(readOnly = true)
     public UserDTO findUserDTOById(Long id){
         User user = userRepository
                 .findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("User with that ID does not exist"));
+                .orElseThrow(UserNotFoundException::new);
         return mapper.convertToUserDTO(user);
     }
 
@@ -51,7 +53,7 @@ public class UserService {
         if (userRepository.existsById(id)) {
             return userRepository.findAllCommentsForUserById(id);
         } else {
-            throw new IllegalArgumentException("User with that id does not exist");
+            throw new UserNotFoundException();
         }
     }
 

@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @ResponseStatus(HttpStatus.CONFLICT)
 public class EmailAlreadyInUseException extends RuntimeException {
 
+    public EmailAlreadyInUseException() {}
+
     public EmailAlreadyInUseException(String message) {
         super(message);
     }

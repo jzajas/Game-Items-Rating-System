@@ -8,7 +8,7 @@ import com.jzajas.RatingSystem.Entities.GameObject;
 import com.jzajas.RatingSystem.Entities.User;
 import org.springframework.stereotype.Component;
 
-//@Component
+@Component
 public class DTOMapper {
 
     public CommentDTO convertToCommentDTO(Comment comment) {
