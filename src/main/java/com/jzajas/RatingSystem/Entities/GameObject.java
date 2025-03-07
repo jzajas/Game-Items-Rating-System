@@ -30,7 +30,6 @@ public class GameObject {
 
     @ManyToOne
     @JoinColumn(name = "author_id", nullable = false)
-//    @Column(name = "author_id", nullable = false)
     private User authorID;
 
     @Temporal(TemporalType.TIMESTAMP)

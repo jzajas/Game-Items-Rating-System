@@ -1,9 +1,6 @@
 package com.jzajas.RatingSystem.ExceptionsHandler;
 
-import com.jzajas.RatingSystem.Exceptions.CommentNotFoundException;
-import com.jzajas.RatingSystem.Exceptions.EmailAlreadyInUseException;
-import com.jzajas.RatingSystem.Exceptions.InvalidRatingValueException;
-import com.jzajas.RatingSystem.Exceptions.UserNotFoundException;
+import com.jzajas.RatingSystem.Exceptions.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -36,5 +33,10 @@ public class GlobalExceptionsHandler {
                 "Comment with the provided id:"+ ex.getMessage() + " could not be found",
                 HttpStatus.BAD_REQUEST
         );
+    }
+
+    @ExceptionHandler(GameObjectNotFoundException.class)
+    public ResponseEntity<String> handleGameObjectNotFoundException(GameObjectNotFoundException ex) {
+        return new ResponseEntity<>("Object with provided id does not exist", HttpStatus.NOT_FOUND);
     }
 }

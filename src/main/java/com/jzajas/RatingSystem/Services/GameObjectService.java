@@ -2,6 +2,7 @@ package com.jzajas.RatingSystem.Services;
 
 import com.jzajas.RatingSystem.DTOs.GameObjectDTO;
 import com.jzajas.RatingSystem.Entities.GameObject;
+import com.jzajas.RatingSystem.Exceptions.GameObjectNotFoundException;
 import com.jzajas.RatingSystem.Mappers.DTOMapper;
 import com.jzajas.RatingSystem.Repositories.GameObjectRepository;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,8 +43,9 @@ public class GameObjectService {
     public void updateGameObject(Long objectId, GameObject newGameObject) {
         GameObject oldGameObject = gameObjectRepository
                 .findById(objectId)
-                .orElseThrow(() -> new IllegalArgumentException("Object with provided id does not exist"));
+                .orElseThrow(GameObjectNotFoundException::new);
 
+//        TODO basic authentication -> will likely change
         if (!oldGameObject.getAuthorID().getId().equals(newGameObject.getAuthorID().getId())) {
             throw new RuntimeException("Only user that created object can edit it");
         }
