@@ -3,6 +3,9 @@ package com.jzajas.RatingSystem.Services;
 import com.jzajas.RatingSystem.DTOs.CommentDTO;
 import com.jzajas.RatingSystem.Entities.Comment;
 import com.jzajas.RatingSystem.Entities.User;
+import com.jzajas.RatingSystem.Exceptions.CommentNotFoundException;
+import com.jzajas.RatingSystem.Exceptions.InvalidRatingValueException;
+import com.jzajas.RatingSystem.Exceptions.UserNotFoundException;
 import com.jzajas.RatingSystem.Mappers.DTOMapper;
 import com.jzajas.RatingSystem.Repositories.CommentRepository;
 import com.jzajas.RatingSystem.Repositories.UserRepository;
@@ -16,14 +19,12 @@ import java.util.stream.Collectors;
 public class CommentService {
 
     private final CommentRepository commentRepository;
-//    private final UserService userService;
     private final DTOMapper mapper;
     private final UserRepository repo;
 
 
-    public CommentService(CommentRepository commentRepository, UserService userService, DTOMapper mapper, UserRepository repo) {
+    public CommentService(CommentRepository commentRepository, DTOMapper mapper, UserRepository repo) {
         this.commentRepository = commentRepository;
-//        this.userService = userService;
         this.mapper = mapper;
         this.repo = repo;
     }
@@ -37,7 +38,7 @@ public class CommentService {
             comment.setReceiver(user);
             commentRepository.save(comment);
         } else {
-            throw new IllegalArgumentException("Illegal value of rating");
+            throw new InvalidRatingValueException();
         }
     }
 
@@ -45,7 +46,7 @@ public class CommentService {
     public CommentDTO findCommentById(Long id) {
         Comment comment = commentRepository
                 .findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Comment with that ID does not exist"));
+                .orElseThrow(CommentNotFoundException::new);
         return mapper.convertToCommentDTO(comment);
     }
 
@@ -57,7 +58,7 @@ public class CommentService {
                     .map(mapper::convertToCommentDTO)
                     .collect(Collectors.toList());
         } else {
-            throw new IllegalArgumentException("User with that id does not exist");
+            throw new UserNotFoundException();
         }
     }
 
@@ -65,14 +66,14 @@ public class CommentService {
     public void updateCommentById(Long id, Comment newComment) {
         Comment oldComment = commentRepository
                 .findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Comment with this id does not exist"));
+                .orElseThrow(CommentNotFoundException::new);
 
         oldComment.setMessage(newComment.getMessage());
 
         if (isRatingValid(newComment.getRating())) {
             oldComment.setRating(newComment.getRating());
         } else {
-            throw new IllegalArgumentException("Provided rating is not within bounds (1-10)");
+            throw new InvalidRatingValueException(String.valueOf(newComment.getRating()));
         }
         commentRepository.save(oldComment);
     }

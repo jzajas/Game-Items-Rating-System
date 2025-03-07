@@ -28,7 +28,7 @@ public class UserService {
     @Transactional
     public void createNewUser(User user) {
         if (emailAlreadyExists(user.getEmail())) {
-           throw new EmailAlreadyInUseException("Provided email is already in use");
+           throw new EmailAlreadyInUseException();
         }
         userRepository.save(user);
     }
@@ -53,7 +53,7 @@ public class UserService {
         if (userRepository.existsById(id)) {
             return userRepository.findAllCommentsForUserById(id);
         } else {
-            throw new UserNotFoundException();
+            throw new UserNotFoundException("User with id: " + id + "could not be found");
         }
     }
 
