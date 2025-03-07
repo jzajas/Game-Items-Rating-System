@@ -13,7 +13,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     User findByEmail(String email);
 
-    @Query(value = "SELECT * FROM comments WHERE comment_receiver = :userId", nativeQuery = true)
+    @Query(value = "SELECT * FROM comments WHERE receiver = :userId", nativeQuery = true)
     List<Comment> findAllCommentsForUserById(@Param("userId") Long userId);
 
 }
