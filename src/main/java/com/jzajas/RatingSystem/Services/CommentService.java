@@ -60,9 +60,14 @@ public class CommentService {
     }
 
     @Transactional(readOnly = true)
-    public List<CommentDTO> findAllUserComments(Long id) {
+    public List<CommentDTO> findAllUserComments(Long id, boolean Posted) {
         if(userRepository.existsById(id)) {
-            List<Comment> allComments =  commentRepository.findAllCommentsByUserId(id);
+            List<Comment> allComments;
+            if (Posted) {
+                allComments =  commentRepository.findAllPostedCommentsByUserId(id);
+            } else {
+                allComments =  commentRepository.findAllReceivedCommentsByUserId(id);
+            }
             return allComments.stream()
                     .map(mapper::convertToCommentDTO)
                     .collect(Collectors.toList());

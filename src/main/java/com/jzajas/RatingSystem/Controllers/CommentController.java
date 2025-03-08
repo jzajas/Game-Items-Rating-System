@@ -27,10 +27,16 @@ public class CommentController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @GetMapping("/{userId}/comments")
-    public ResponseEntity<List<CommentDTO>> listSellersComments(@PathVariable Long userId) {
-        List<CommentDTO> allUserComments = commentService.findAllUserComments(userId);
-        return ResponseEntity.ok(allUserComments);
+    @GetMapping("/{userId}/comments/posted")
+    public ResponseEntity<List<CommentDTO>> listSellersPostedComments(@PathVariable Long userId) {
+        List<CommentDTO> allPostedComments = commentService.findAllUserComments(userId, true);
+        return ResponseEntity.ok(allPostedComments);
+    }
+
+    @GetMapping("/{userId}/comments/received")
+    public ResponseEntity<List<CommentDTO>> listSellersReceivedComments(@PathVariable Long userId) {
+        List<CommentDTO> allReceivedComments = commentService.findAllUserComments(userId, false);
+        return ResponseEntity.ok(allReceivedComments);
     }
 
     @GetMapping("/{userId}/comments/{commentId}")
