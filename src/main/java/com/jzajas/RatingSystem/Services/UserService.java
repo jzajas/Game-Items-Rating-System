@@ -1,6 +1,7 @@
 package com.jzajas.RatingSystem.Services;
 
 import com.jzajas.RatingSystem.DTOs.UserDTO;
+import com.jzajas.RatingSystem.DTOs.UserScoreDTO;
 import com.jzajas.RatingSystem.Entities.Comment;
 import com.jzajas.RatingSystem.Entities.User;
 import com.jzajas.RatingSystem.Exceptions.EmailAlreadyInUseException;
@@ -11,17 +12,20 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
 public class UserService {
 
     private final UserRepository userRepository;
+//    private final PasswordEncoder encoder;
     private final DTOMapper mapper;
 
     public UserService(UserRepository userRepository, DTOMapper mapper) {
         this.userRepository = userRepository;
         this.mapper = mapper;
+//        this.encoder = encoder;
     }
 
     @Transactional
@@ -29,6 +33,7 @@ public class UserService {
         if (emailAlreadyExists(user.getEmail())) {
            throw new EmailAlreadyInUseException();
         }
+//        user.setPassword(encoder.encode(user.getPassword()));
         userRepository.save(user);
     }
 
@@ -67,6 +72,19 @@ public class UserService {
                 .mapToDouble(Comment::getRating)
                 .average()
                 .orElse(0);
+    }
+
+    @Transactional(readOnly = true)
+    public List<UserScoreDTO> getTopSellers() {
+        return userRepository
+                .findAll()
+                .parallelStream()
+                .map(user -> mapper.convertToUserScoreDTO(user))
+//                TODO this has to change because for now all users have score 0
+//                .map(user -> user.setScore(calculateUserScore(user.get)))
+                .sorted((u1, u2) -> Double.compare(u2.getScore(), u1.getScore()))
+                .sorted()
+                .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
