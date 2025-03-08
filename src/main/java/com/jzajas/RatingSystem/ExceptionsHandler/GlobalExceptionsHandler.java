@@ -39,15 +39,18 @@ public class GlobalExceptionsHandler {
     public ResponseEntity<String> handleCommentNotFoundException(CommentNotFoundException ex) {
         log.info("Caught CommentNotFoundException: ", ex);
         return new ResponseEntity<>(
-                "Comment with the provided id:"+ ex.getMessage() + " could not be found",
-                HttpStatus.BAD_REQUEST
+                "Comment with the provided id: " + ex.getMessage() + " could not be found",
+                HttpStatus.NOT_FOUND
         );
     }
 
     @ExceptionHandler(GameObjectNotFoundException.class)
     public ResponseEntity<String> handleGameObjectNotFoundException(GameObjectNotFoundException ex) {
         log.info("Caught GameObjectNotFoundException: ", ex);
-        return new ResponseEntity<>("Object with provided id does not exist", HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(
+                "Object with provided id: " + ex.getMessage() + " could not be found",
+                HttpStatus.NOT_FOUND
+        );
     }
 
     @ExceptionHandler(BadRequestException.class)

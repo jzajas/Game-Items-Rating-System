@@ -12,6 +12,10 @@ public class CommentNotFoundException extends RuntimeException{
         super(message);
     }
 
+    public CommentNotFoundException(Long id) {
+        super(String.valueOf(id));
+    }
+
     public CommentNotFoundException(Throwable tr) {
         super(tr);
     }

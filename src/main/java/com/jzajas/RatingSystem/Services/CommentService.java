@@ -40,7 +40,7 @@ public class CommentService {
 //            );
 //        }
         if (!isRatingValid(comment.getRating())) {
-            throw new InvalidRatingValueException(String.valueOf(comment.getRating()));
+            throw new InvalidRatingValueException(comment.getRating());
         }
         if (!userRepository.existsById(userId)) {
             throw new UserNotFoundException(userId);
@@ -55,7 +55,7 @@ public class CommentService {
     public CommentDTO findCommentById(Long id) {
         Comment comment = commentRepository
                 .findById(id)
-                .orElseThrow(CommentNotFoundException::new);
+                .orElseThrow(() -> new CommentNotFoundException(id));
         return mapper.convertToCommentDTO(comment);
     }
 
@@ -72,7 +72,7 @@ public class CommentService {
                     .map(mapper::convertToCommentDTO)
                     .collect(Collectors.toList());
         } else {
-            throw new UserNotFoundException();
+            throw new UserNotFoundException(id);
         }
     }
 
@@ -80,14 +80,14 @@ public class CommentService {
     public void updateCommentById(Long id, Comment newComment) {
         Comment oldComment = commentRepository
                 .findById(id)
-                .orElseThrow(CommentNotFoundException::new);
+                .orElseThrow(() -> new CommentNotFoundException(id));
 
         oldComment.setMessage(newComment.getMessage());
 
         if (isRatingValid(newComment.getRating())) {
             oldComment.setRating(newComment.getRating());
         } else {
-            throw new InvalidRatingValueException(String.valueOf(newComment.getRating()));
+            throw new InvalidRatingValueException(newComment.getRating());
         }
         commentRepository.save(oldComment);
     }

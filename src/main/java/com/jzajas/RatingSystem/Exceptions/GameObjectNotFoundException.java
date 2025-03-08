@@ -12,6 +12,10 @@ public class GameObjectNotFoundException extends RuntimeException {
         super(message);
     }
 
+    public GameObjectNotFoundException(Long id) {
+        super(String.valueOf(id));
+    }
+
     public GameObjectNotFoundException(Throwable tr) {
         super(tr);
     }

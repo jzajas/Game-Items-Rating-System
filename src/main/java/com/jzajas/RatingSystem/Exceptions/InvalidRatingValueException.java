@@ -12,6 +12,10 @@ public class InvalidRatingValueException extends RuntimeException{
         super(message);
     }
 
+    public InvalidRatingValueException(int rating) {
+        super(String.valueOf(rating));
+    }
+
     public InvalidRatingValueException(Throwable tr) {
         super(tr);
     }

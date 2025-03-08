@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-//TODO make custom exception for providing incorrect id for user, comment and game object;
 
 @Service
 public class UserService {
@@ -37,14 +36,14 @@ public class UserService {
     public User findUserById(Long id) {
         return userRepository
                 .findById(id)
-                .orElseThrow(UserNotFoundException::new);
+                .orElseThrow(() -> new UserNotFoundException(id));
     }
 
     @Transactional(readOnly = true)
     public UserDTO findUserDTOById(Long id){
         User user = userRepository
                 .findById(id)
-                .orElseThrow(UserNotFoundException::new);
+                .orElseThrow(() -> new UserNotFoundException(id));
         return mapper.convertToUserDTO(user);
     }
 

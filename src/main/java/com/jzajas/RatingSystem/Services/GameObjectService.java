@@ -43,10 +43,15 @@ public class GameObjectService {
     public void updateGameObject(Long objectId, GameObject newGameObject) {
         GameObject oldGameObject = gameObjectRepository
                 .findById(objectId)
-                .orElseThrow(GameObjectNotFoundException::new);
+                .orElseThrow(() -> new GameObjectNotFoundException(objectId));
+
+        gameObjectRepository
+                .findById(newGameObject.getId())
+                .orElseThrow(() -> new GameObjectNotFoundException(newGameObject.getId()));
 
 //        TODO basic authentication -> will likely change
         if (!oldGameObject.getAuthorID().getId().equals(newGameObject.getAuthorID().getId())) {
+//            TODO some unauthorized exception?
             throw new RuntimeException("Only user that created object can edit it");
         }
         oldGameObject.setTitle(newGameObject.getTitle());
