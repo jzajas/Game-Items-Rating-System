@@ -41,14 +41,13 @@ public class DTOMapper {
         return dto;
     }
 
-    public UserScoreDTO convertToUserScoreDTO(User user) {
+    public UserScoreDTO convertToUserScoreDTO(User user, double score) {
         UserScoreDTO dto = new UserScoreDTO();
 
         dto.setFirstName(user.getFirstName());
         dto.setLastName(user.getLastName());
         dto.setCreatedAt(user.getCreatedAt());
-//        TODO this has to change in some way as well
-        dto.setScore(0.0);
+        dto.setScore(score);
 
         return dto;
     }

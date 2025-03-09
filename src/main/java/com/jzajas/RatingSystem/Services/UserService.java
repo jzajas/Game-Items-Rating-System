@@ -11,7 +11,8 @@ import com.jzajas.RatingSystem.Repositories.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.math.BigDecimal;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -65,25 +66,30 @@ public class UserService {
     public double calculateUserScore(Long id) {
         List<Comment> commentList = getAllCommentsForUserById(id);
 
-        if (commentList.isEmpty()) {
-            return 0.0;
-        }
-        return commentList.stream()
+//        if (commentList.isEmpty()) {
+//            return 0.0;
+//        }
+
+        return commentList
+                .parallelStream()
                 .mapToDouble(Comment::getRating)
                 .average()
                 .orElse(0);
     }
 
     @Transactional(readOnly = true)
-    public List<UserScoreDTO> getTopSellers() {
-        return userRepository
-                .findAll()
-                .parallelStream()
-                .map(user -> mapper.convertToUserScoreDTO(user))
-//                TODO this has to change because for now all users have score 0
-//                .map(user -> user.setScore(calculateUserScore(user.get)))
-                .sorted((u1, u2) -> Double.compare(u2.getScore(), u1.getScore()))
-                .sorted()
+    public List<UserScoreDTO> getTopSellers(int number) {
+        List<Object[]> results = userRepository.findTopSellersByRating(number);
+
+        return results.stream()
+                .map(r -> {
+                    UserScoreDTO dto = new UserScoreDTO();
+                    dto.setFirstName((String) r[1]);
+                    dto.setLastName((String) r[2]);
+                    dto.setCreatedAt((Date) r[3]);
+                    dto.setScore(((Number) r[4]).doubleValue());
+                    return dto;
+                })
                 .collect(Collectors.toList());
     }
 

@@ -1,11 +1,14 @@
 package com.jzajas.RatingSystem.Controllers;
 
 import com.jzajas.RatingSystem.DTOs.UserDTO;
+import com.jzajas.RatingSystem.DTOs.UserScoreDTO;
 import com.jzajas.RatingSystem.Entities.User;
 import com.jzajas.RatingSystem.Services.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 @RestController
@@ -38,10 +41,10 @@ public class UserController {
     
 //    TODO @RequestParam might be got for specifying how many sellers to display
     @GetMapping("/score")
-    public void getTopSellers(RequestParam display) {
-//    public ResponseEntity<Double> getTopSellers(RequestParam display) {
-//        double score = userService.calculateUserScore(userId);
-//        return ResponseEntity.ok(score);
+//    public void getTopSellers(RequestParam display) {
+    public ResponseEntity<List<UserScoreDTO>> getTopSellers (@RequestParam(defaultValue = "10") int display) {
+        List<UserScoreDTO> score = userService.getTopSellers(display);
+        return ResponseEntity.ok(score);
 
     }
 }
