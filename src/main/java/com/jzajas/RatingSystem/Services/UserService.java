@@ -3,6 +3,7 @@ package com.jzajas.RatingSystem.Services;
 import com.jzajas.RatingSystem.DTO.UserDTO;
 import com.jzajas.RatingSystem.DTO.UserScoreDTO;
 import com.jzajas.RatingSystem.Entities.Comment;
+import com.jzajas.RatingSystem.Entities.GameCategory;
 import com.jzajas.RatingSystem.Entities.User;
 import com.jzajas.RatingSystem.Exceptions.EmailAlreadyInUseException;
 import com.jzajas.RatingSystem.Exceptions.UserNotFoundException;
@@ -61,6 +62,16 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
+    public List<UserScoreDTO> getTopSellers(int number) {
+        return userRepository.findTopSellersByRating(number);
+    }
+
+    @Transactional(readOnly = true)
+    public List<UserScoreDTO> getTopSellersByCategory(int number, GameCategory category) {
+        return userRepository.findTopSellersByRatingAndCategory(number, String.valueOf(category));
+    }
+
+    @Transactional(readOnly = true)
     public double calculateUserScore(Long id) {
         List<Comment> commentList = getAllCommentsForUserById(id);
 
@@ -69,12 +80,6 @@ public class UserService {
                 .mapToDouble(Comment::getRating)
                 .average()
                 .orElse(0);
-    }
-
-    @Transactional(readOnly = true)
-    public List<UserScoreDTO> getTopSellers(int number) {
-        return userRepository.findTopSellersByRating(number);
-
     }
 
     @Transactional(readOnly = true)

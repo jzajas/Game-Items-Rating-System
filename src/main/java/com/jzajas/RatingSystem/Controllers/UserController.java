@@ -2,6 +2,7 @@ package com.jzajas.RatingSystem.Controllers;
 
 import com.jzajas.RatingSystem.DTO.UserDTO;
 import com.jzajas.RatingSystem.DTO.UserScoreDTO;
+import com.jzajas.RatingSystem.Entities.GameCategory;
 import com.jzajas.RatingSystem.Entities.User;
 import com.jzajas.RatingSystem.Services.UserService;
 import org.springframework.http.HttpStatus;
@@ -41,8 +42,17 @@ public class UserController {
     
     @GetMapping("/score")
     public ResponseEntity<List<UserScoreDTO>> getTopSellers(@RequestParam(defaultValue = "10") int display) {
-        List<UserScoreDTO> score = userService.getTopSellers(display);
-        return ResponseEntity.ok(score);
+        List<UserScoreDTO> topSellers = userService.getTopSellers(display);
+        return ResponseEntity.ok(topSellers);
 
+    }
+
+    @GetMapping("/score/{category}")
+    public ResponseEntity<List<UserScoreDTO>> getTopSellersForCategory(
+            @RequestParam(defaultValue = "10") int display,
+            @PathVariable GameCategory category
+    ) {
+        List<UserScoreDTO> topSellers = userService.getTopSellersByCategory(display, category);
+        return ResponseEntity.ok(topSellers);
     }
 }

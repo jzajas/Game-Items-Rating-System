@@ -20,4 +20,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query(name = "find_top_sellers", nativeQuery = true)
     List<UserScoreDTO> findTopSellersByRating(@Param("limit") int limit);
 
+    @Query(name = "find_top_sellers_by_category", nativeQuery = true)
+    List<UserScoreDTO> findTopSellersByRatingAndCategory(@Param("limit") int limit, @Param("category") String category);
 }
