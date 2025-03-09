@@ -54,8 +54,15 @@ public class GameObjectService {
 //            TODO some unauthorized exception?
             throw new RuntimeException("Only user that created object can edit it");
         }
+//        try {
+//            newGameObject
+//        } catch (IllegalArgumentException iae) {
+//            throw new
+//        }
+
         oldGameObject.setTitle(newGameObject.getTitle());
         oldGameObject.setText(newGameObject.getText());
+        oldGameObject.setCategory(newGameObject.getCategory());
 
         gameObjectRepository.save(oldGameObject);
     }

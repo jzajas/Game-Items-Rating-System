@@ -8,9 +8,6 @@ import lombok.NoArgsConstructor;
 import java.util.Date;
 
 
-//TODO might want ot add a game field for easier sorting and querying
-
-
 @Data
 @Entity
 @Table(name = "game_objects")
@@ -31,6 +28,10 @@ public class GameObject {
     @ManyToOne
     @JoinColumn(name = "author_id", nullable = false)
     private User authorID;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "category", nullable = false)
+    private GameCategory category;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at", nullable = false)

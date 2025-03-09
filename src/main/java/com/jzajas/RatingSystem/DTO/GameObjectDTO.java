@@ -14,4 +14,5 @@ public class GameObjectDTO {
     private String title;
     private String text;
     private Date updatedAt;
+    private String category;
 }

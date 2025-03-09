@@ -46,6 +46,7 @@ public class DTOMapper {
         dto.setTitle(gameObject.getTitle());
         dto.setText(gameObject.getText());
         dto.setUpdatedAt(gameObject.getUpdatedAt());
+        dto.setCategory(String.valueOf(gameObject.getCategory()));
 
         return dto;
     }
