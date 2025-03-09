@@ -1,6 +1,6 @@
 package com.jzajas.RatingSystem.Controllers;
 
-import com.jzajas.RatingSystem.DTOs.GameObjectDTO;
+import com.jzajas.RatingSystem.DTO.GameObjectDTO;
 import com.jzajas.RatingSystem.Entities.GameObject;
 import com.jzajas.RatingSystem.Services.GameObjectService;
 import org.springframework.http.HttpStatus;

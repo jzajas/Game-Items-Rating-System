@@ -1,7 +1,7 @@
 package com.jzajas.RatingSystem.Services;
 
-import com.jzajas.RatingSystem.DTOs.UserDTO;
-import com.jzajas.RatingSystem.DTOs.UserScoreDTO;
+import com.jzajas.RatingSystem.DTO.UserDTO;
+import com.jzajas.RatingSystem.DTO.UserScoreDTO;
 import com.jzajas.RatingSystem.Entities.Comment;
 import com.jzajas.RatingSystem.Entities.User;
 import com.jzajas.RatingSystem.Exceptions.EmailAlreadyInUseException;
@@ -11,9 +11,7 @@ import com.jzajas.RatingSystem.Repositories.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.util.*;
-import java.util.stream.Collectors;
 
 
 @Service
@@ -58,17 +56,13 @@ public class UserService {
         if (userRepository.existsById(id)) {
             return userRepository.findAllCommentsForUserById(id);
         } else {
-            throw new UserNotFoundException("User with id: " + id + "could not be found");
+            throw new UserNotFoundException(id);
         }
     }
 
     @Transactional(readOnly = true)
     public double calculateUserScore(Long id) {
         List<Comment> commentList = getAllCommentsForUserById(id);
-
-//        if (commentList.isEmpty()) {
-//            return 0.0;
-//        }
 
         return commentList
                 .parallelStream()
@@ -79,18 +73,8 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public List<UserScoreDTO> getTopSellers(int number) {
-        List<Object[]> results = userRepository.findTopSellersByRating(number);
+        return userRepository.findTopSellersByRating(number);
 
-        return results.stream()
-                .map(r -> {
-                    UserScoreDTO dto = new UserScoreDTO();
-                    dto.setFirstName((String) r[1]);
-                    dto.setLastName((String) r[2]);
-                    dto.setCreatedAt((Date) r[3]);
-                    dto.setScore(((Number) r[4]).doubleValue());
-                    return dto;
-                })
-                .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)

@@ -1,7 +1,7 @@
 package com.jzajas.RatingSystem.Controllers;
 
-import com.jzajas.RatingSystem.DTOs.UserDTO;
-import com.jzajas.RatingSystem.DTOs.UserScoreDTO;
+import com.jzajas.RatingSystem.DTO.UserDTO;
+import com.jzajas.RatingSystem.DTO.UserScoreDTO;
 import com.jzajas.RatingSystem.Entities.User;
 import com.jzajas.RatingSystem.Services.UserService;
 import org.springframework.http.HttpStatus;
@@ -39,10 +39,8 @@ public class UserController {
         return ResponseEntity.ok(score);
     }
     
-//    TODO @RequestParam might be got for specifying how many sellers to display
     @GetMapping("/score")
-//    public void getTopSellers(RequestParam display) {
-    public ResponseEntity<List<UserScoreDTO>> getTopSellers (@RequestParam(defaultValue = "10") int display) {
+    public ResponseEntity<List<UserScoreDTO>> getTopSellers(@RequestParam(defaultValue = "10") int display) {
         List<UserScoreDTO> score = userService.getTopSellers(display);
         return ResponseEntity.ok(score);
 

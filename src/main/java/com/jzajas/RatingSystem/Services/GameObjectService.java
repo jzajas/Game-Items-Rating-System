@@ -1,6 +1,6 @@
 package com.jzajas.RatingSystem.Services;
 
-import com.jzajas.RatingSystem.DTOs.GameObjectDTO;
+import com.jzajas.RatingSystem.DTO.GameObjectDTO;
 import com.jzajas.RatingSystem.Entities.GameObject;
 import com.jzajas.RatingSystem.Exceptions.GameObjectNotFoundException;
 import com.jzajas.RatingSystem.Mappers.DTOMapper;

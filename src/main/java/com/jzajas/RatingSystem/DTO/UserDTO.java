@@ -1,4 +1,6 @@
-package com.jzajas.RatingSystem.DTOs;
+package com.jzajas.RatingSystem.DTO;
+
+//TODO separate userDTO for registration
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,10 +11,9 @@ import java.util.Date;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserScoreDTO {
+public class UserDTO {
 
     private String firstName;
     private String lastName;
     private Date createdAt;
-    private double score;
 }

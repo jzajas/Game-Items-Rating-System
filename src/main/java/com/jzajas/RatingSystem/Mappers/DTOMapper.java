@@ -1,9 +1,8 @@
 package com.jzajas.RatingSystem.Mappers;
 
-import com.jzajas.RatingSystem.DTOs.CommentDTO;
-import com.jzajas.RatingSystem.DTOs.GameObjectDTO;
-import com.jzajas.RatingSystem.DTOs.UserDTO;
-import com.jzajas.RatingSystem.DTOs.UserScoreDTO;
+import com.jzajas.RatingSystem.DTO.CommentDTO;
+import com.jzajas.RatingSystem.DTO.GameObjectDTO;
+import com.jzajas.RatingSystem.DTO.UserDTO;
 import com.jzajas.RatingSystem.Entities.Comment;
 import com.jzajas.RatingSystem.Entities.GameObject;
 import com.jzajas.RatingSystem.Entities.User;
@@ -37,17 +36,6 @@ public class DTOMapper {
         dto.setFirstName(user.getFirstName());
         dto.setLastName(user.getLastName());
         dto.setCreatedAt(user.getCreatedAt());
-
-        return dto;
-    }
-
-    public UserScoreDTO convertToUserScoreDTO(User user, double score) {
-        UserScoreDTO dto = new UserScoreDTO();
-
-        dto.setFirstName(user.getFirstName());
-        dto.setLastName(user.getLastName());
-        dto.setCreatedAt(user.getCreatedAt());
-        dto.setScore(score);
 
         return dto;
     }

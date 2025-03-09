@@ -1,6 +1,6 @@
 package com.jzajas.RatingSystem.Services;
 
-import com.jzajas.RatingSystem.DTOs.CommentDTO;
+import com.jzajas.RatingSystem.DTO.CommentDTO;
 import com.jzajas.RatingSystem.Entities.Comment;
 import com.jzajas.RatingSystem.Entities.User;
 import com.jzajas.RatingSystem.Exceptions.CommentNotFoundException;
