@@ -9,6 +9,7 @@ import com.jzajas.RatingSystem.Exceptions.EmailAlreadyInUseException;
 import com.jzajas.RatingSystem.Exceptions.UserNotFoundException;
 import com.jzajas.RatingSystem.Mappers.DTOMapper;
 import com.jzajas.RatingSystem.Repositories.UserRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,13 +20,13 @@ import java.util.*;
 public class UserService {
 
     private final UserRepository userRepository;
-//    private final PasswordEncoder encoder;
+    private final PasswordEncoder encoder;
     private final DTOMapper mapper;
 
-    public UserService(UserRepository userRepository, DTOMapper mapper) {
+    public UserService(UserRepository userRepository, DTOMapper mapper, PasswordEncoder encoder) {
         this.userRepository = userRepository;
         this.mapper = mapper;
-//        this.encoder = encoder;
+        this.encoder = encoder;
     }
 
     @Transactional
@@ -33,7 +34,7 @@ public class UserService {
         if (emailAlreadyExists(user.getEmail())) {
            throw new EmailAlreadyInUseException();
         }
-//        user.setPassword(encoder.encode(user.getPassword()));
+        user.setPassword(encoder.encode(user.getPassword()));
         userRepository.save(user);
     }
 
