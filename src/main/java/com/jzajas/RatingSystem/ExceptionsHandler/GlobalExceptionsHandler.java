@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -22,7 +23,7 @@ public class GlobalExceptionsHandler {
     }
 
     @ExceptionHandler(UserEmailNotFoundException.class)
-    public ResponseEntity<String> handleUserEmailNotFoundException(UserNotFoundException ex) {
+    public ResponseEntity<String> handleUserEmailNotFoundException(UserEmailNotFoundException ex) {
         log.info("Caught UserEmailNotFoundException: ", ex);
         return new ResponseEntity<>(
                 "Provided email: " + ex.getMessage() + " could not be found",
@@ -69,14 +70,23 @@ public class GlobalExceptionsHandler {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleUncaughtException(Exception e) {
-        log.info("Uncaught exception occurred: ", e);
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<String> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
+        log.info("Caught BadRequestException: ", ex);
+        return new ResponseEntity<>(
+                ex.getBindingResult().getFieldError().getDefaultMessage(),
+                HttpStatus.BAD_REQUEST
+        );
     }
 
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<String> handleAccessDeniedException(AccessDeniedException e) {
+        log.info("Uncaught exception occurred: ", e);
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<String> handleUncaughtException(Exception e) {
         log.info("Uncaught exception occurred: ", e);
         return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
