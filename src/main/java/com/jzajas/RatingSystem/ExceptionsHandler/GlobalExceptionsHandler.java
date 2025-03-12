@@ -4,6 +4,7 @@ import com.jzajas.RatingSystem.Exceptions.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -16,6 +17,15 @@ public class GlobalExceptionsHandler {
         log.info("Caught UserNotFoundException: ", ex);
         return new ResponseEntity<>(
                 "User with provided ID:" + ex.getMessage() + " could not be found",
+                HttpStatus.NOT_FOUND
+        );
+    }
+
+    @ExceptionHandler(UserEmailNotFoundException.class)
+    public ResponseEntity<String> handleUserEmailNotFoundException(UserNotFoundException ex) {
+        log.info("Caught UserEmailNotFoundException: ", ex);
+        return new ResponseEntity<>(
+                "Provided email: " + ex.getMessage() + " could not be found",
                 HttpStatus.NOT_FOUND
         );
     }
@@ -61,6 +71,12 @@ public class GlobalExceptionsHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleUncaughtException(Exception e) {
+        log.info("Uncaught exception occurred: ", e);
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<String> handleAccessDeniedException(AccessDeniedException e) {
         log.info("Uncaught exception occurred: ", e);
         return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }

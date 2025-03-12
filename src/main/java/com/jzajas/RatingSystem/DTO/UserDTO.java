@@ -1,7 +1,5 @@
 package com.jzajas.RatingSystem.DTO;
 
-//TODO separate userDTO for registration
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

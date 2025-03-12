@@ -5,6 +5,9 @@ import com.jzajas.RatingSystem.Entities.GameObject;
 import com.jzajas.RatingSystem.Services.GameObjectService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,6 +23,7 @@ public class GameObjectController {
         this.gameObjectService = gameObjectService;
     }
 
+    @Secured("ROLE_SELLER")
     @PostMapping("/")
     public ResponseEntity<Void> addNewGameObject(@RequestBody GameObject gameObject) {
         gameObjectService.createNewGameObject(gameObject);
@@ -33,6 +37,8 @@ public class GameObjectController {
     }
 
 //    TODO only owner can edit object
+    @PreAuthorize("#objectId == authentication.principal.id")
+//    @PostAuthorize("returnObject.id == authentication.principal.id")
     @PutMapping("/{objectId}")
     public ResponseEntity<Void> editGameObject(@PathVariable Long objectId, @RequestBody GameObject gameObject) {
         gameObjectService.updateGameObject(objectId, gameObject);
@@ -40,6 +46,7 @@ public class GameObjectController {
     }
 
 //    TODO only owner can delete object
+    @PreAuthorize("#objectId == authentication.principal.id")
     @DeleteMapping("/{gameObjectId}")
     public ResponseEntity<Void> deleteGameObject(@PathVariable Long gameObjectId) {
         gameObjectService.deleteGameObjectById(gameObjectId);
