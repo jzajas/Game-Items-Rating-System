@@ -42,10 +42,12 @@ public class UserController {
     @PostMapping("/register")
     public ResponseEntity<Void> createUser(@Valid @RequestBody UserRegistrationDTO dto) {
         User user = mapper.convertFromUserRegistrationDTO(dto);
+//        TODO might want ot send the dto to service and there map it to user
         userService.createNewUser(user);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
+//    TODO useless?
     @PostMapping("/login")
     public ResponseEntity<Void> loginUser(@Valid @RequestBody UserLoginDTO dto) {
         Authentication authentication = authenticationManager.authenticate(
@@ -89,13 +91,9 @@ public class UserController {
 
 
     @GetMapping("/user")
-    public String getUser(@AuthenticationPrincipal UserDetails userDetails) {
-        log.info(userDetails.getAuthorities().toString());
-        log.info(userDetails.getAuthorities().toString());
-        log.info(userDetails.getAuthorities().toString());
-        log.info(userDetails.getAuthorities().toString());
-        log.info(userDetails.getAuthorities().toString());
-
-        return "User Details: " + userDetails.getUsername();
+    public void getUser(@AuthenticationPrincipal UserDetails userDetails, Authentication authentication) {
+        System.out.println(userDetails);
+        System.out.println();
+        System.out.println(authentication);
     }
 }

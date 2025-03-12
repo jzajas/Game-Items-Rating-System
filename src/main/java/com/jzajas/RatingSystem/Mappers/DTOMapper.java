@@ -9,24 +9,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class DTOMapper {
 
-    public CommentDTO convertToCommentDTO(Comment comment) {
-        CommentDTO dto = new CommentDTO();
-
-        dto.setMessage(comment.getMessage());
-        if (comment.getAuthorID() == null) {
-            dto.setAuthorFirstName(null);
-            dto.setAuthorLastName(null);
-        } else {
-            dto.setAuthorFirstName(comment.getAuthorID().getFirstName());
-            dto.setAuthorLastName(comment.getAuthorID().getLastName());
-        }
-        dto.setReceiverFirstName(comment.getReceiver().getFirstName());
-        dto.setReceiverLastName(comment.getReceiver().getLastName());
-        dto.setCreatedAt(comment.getCreatedAt());
-        dto.setRating(comment.getRating());
-
-        return dto;
-    }
 
     public UserDTO convertToUserDTO(User user) {
         UserDTO dto = new UserDTO();
@@ -46,7 +28,50 @@ public class DTOMapper {
         user.setPassword(dto.getPassword());
         user.setEmail(dto.getEmail());
 
+        if (dto.getRole() != null) user.setRole(dto.getRole());
+
         return user;
+    }
+
+    public CommentDTO convertToCommentDTO(Comment comment) {
+        CommentDTO dto = new CommentDTO();
+
+        dto.setMessage(comment.getMessage());
+        if (comment.getAuthorID() == null) {
+            dto.setAuthorFirstName(null);
+            dto.setAuthorLastName(null);
+        } else {
+            dto.setAuthorFirstName(comment.getAuthorID().getFirstName());
+            dto.setAuthorLastName(comment.getAuthorID().getLastName());
+        }
+        dto.setReceiverFirstName(comment.getReceiver().getFirstName());
+        dto.setReceiverLastName(comment.getReceiver().getLastName());
+        dto.setCreatedAt(comment.getCreatedAt());
+        dto.setRating(comment.getRating());
+
+        return dto;
+    }
+
+    public Comment convertFromCommentRegistrationDTONotAnonymous(CommentRegistrationDTO dto) {
+        Comment comment = new Comment();
+
+        comment.setMessage(dto.getMessage());
+        comment.setReceiver(dto.getReceiverID());
+        comment.setAuthorID(dto.getAuthorID());
+        comment.setRating(dto.getRating());
+
+        return comment;
+    }
+
+    public Comment convertFromCommentRegistrationDTOAnonymous(CommentRegistrationDTO dto) {
+        Comment comment = new Comment();
+
+        comment.setMessage(dto.getMessage());
+        comment.setReceiver(dto.getReceiverID());
+        comment.setAuthorID(null);
+        comment.setRating(dto.getRating());
+
+        return comment;
     }
 
     public GameObjectDTO convertToGameObjectDTO(GameObject gameObject) {
@@ -58,15 +83,6 @@ public class DTOMapper {
         dto.setCategory(String.valueOf(gameObject.getCategory()));
 
         return dto;
-    }
-
-    public GameObject convertFromGameObjectUpdateDTO(GameObjectUpdateDTO dto, GameObject oldGameObject) {
-
-        oldGameObject.setTitle(dto.getTitle());
-        oldGameObject.setText(dto.getText());
-        oldGameObject.setCategory(dto.getCategory());
-
-        return oldGameObject;
     }
 
     public GameObject convertFromGameObjectRegistrationDTO(GameObjectRegistrationDTO dto) {

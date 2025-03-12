@@ -50,7 +50,9 @@ public class GameObjectService {
     @Transactional
     public void updateGameObject(Long objectId, GameObjectUpdateDTO dto) {
         GameObject oldGameObject = getGameObjectByID(objectId);
-        oldGameObject = mapper.convertFromGameObjectUpdateDTO(dto, oldGameObject);
+        oldGameObject.setTitle(dto.getTitle());
+        oldGameObject.setText(dto.getText());
+        oldGameObject.setCategory(dto.getCategory());
         gameObjectRepository.save(oldGameObject);
     }
 

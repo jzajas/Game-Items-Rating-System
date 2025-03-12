@@ -1,8 +1,11 @@
 package com.jzajas.RatingSystem.Services;
 
 import com.jzajas.RatingSystem.DTO.CommentDTO;
+import com.jzajas.RatingSystem.DTO.CommentRegistrationDTO;
+import com.jzajas.RatingSystem.DTO.CommentUpdateDTO;
 import com.jzajas.RatingSystem.Entities.Comment;
 import com.jzajas.RatingSystem.Entities.User;
+import com.jzajas.RatingSystem.Exceptions.BadRequestException;
 import com.jzajas.RatingSystem.Exceptions.CommentNotFoundException;
 import com.jzajas.RatingSystem.Exceptions.InvalidRatingValueException;
 import com.jzajas.RatingSystem.Exceptions.UserNotFoundException;
@@ -30,33 +33,36 @@ public class CommentService {
     }
 
 //    TODO if the user is not found then there can be a prompt to log in/ set up account -> one of the scenarios
-//    TODO posting user id, and receiving user id  should not be in the payload?
     @Transactional
-    public void createNewComment(Comment comment, Long userId) {
-//        long commentReceiverId = comment.getReceiver().getId();
-//        if (!Objects.equals(commentReceiverId, userId)) {
-//            throw new BadRequestException(
-//                    "Comment receiver id (" + commentReceiverId + ") does not match the id (" + userId + ") from URL"
-//            );
-//        }
-        if (!isRatingValid(comment.getRating())) {
-            throw new InvalidRatingValueException(comment.getRating());
-        }
-        if (!userRepository.existsById(userId)) {
-            throw new UserNotFoundException(userId);
-        }
+    public void createNewComment(CommentRegistrationDTO dto, Long userId, boolean isAnonymous) {
+        if (!isRatingValid(dto.getRating())) throw new InvalidRatingValueException(dto.getRating());
+        if (userRepository.findById(userId).isEmpty()) throw new UserNotFoundException(userId);
+
         User user = userRepository.findById(userId).get();
+        Comment comment;
+
+        if (!isAnonymous) {
+            comment = mapper.convertFromCommentRegistrationDTONotAnonymous(dto);
+        } else {
+            comment = mapper.convertFromCommentRegistrationDTOAnonymous(dto);
+        }
         comment.setReceiver(user);
-        System.out.println(user);
         commentRepository.save(comment);
     }
 
     @Transactional(readOnly = true)
-    public CommentDTO findCommentById(Long id) {
+    public CommentDTO findCommentDTOById(Long id) {
         Comment comment = commentRepository
                 .findById(id)
                 .orElseThrow(() -> new CommentNotFoundException(id));
         return mapper.convertToCommentDTO(comment);
+    }
+
+    @Transactional(readOnly = true)
+    public Comment findCommentById(Long id) {
+        return commentRepository
+                .findById(id)
+                .orElseThrow(() -> new CommentNotFoundException(id));
     }
 
     @Transactional(readOnly = true)
@@ -77,17 +83,15 @@ public class CommentService {
     }
 
     @Transactional
-    public void updateCommentById(Long id, Comment newComment) {
-        Comment oldComment = commentRepository
-                .findById(id)
-                .orElseThrow(() -> new CommentNotFoundException(id));
+    public void updateCommentById(Long id, CommentUpdateDTO dto) {
+        Comment oldComment = findCommentById(id);
+        if (oldComment.getAuthorID() == null) throw new BadRequestException("Cannot update anonymous comment");
 
-        oldComment.setMessage(newComment.getMessage());
-
-        if (isRatingValid(newComment.getRating())) {
-            oldComment.setRating(newComment.getRating());
+        if (isRatingValid(dto.getRating())) {
+            oldComment.setRating(dto.getRating());
+            oldComment.setMessage(dto.getMessage());
         } else {
-            throw new InvalidRatingValueException(newComment.getRating());
+            throw new InvalidRatingValueException(dto.getRating());
         }
         commentRepository.save(oldComment);
     }

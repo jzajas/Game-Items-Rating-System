@@ -9,4 +9,8 @@ public class CustomSecurityExpressions {
             "@gameObjectService.getGameObjectByID(#objectId).getAuthorID().getEmail() == authentication.name or " +
                     "hasRole('ADMINISTRATOR')";
 
+    public static final String COMMENT_OWNER_BY_ID_OR_ADMIN =
+            "@commentService.findCommentById(#commentId).getAuthorID().getEmail() == authentication.name or " +
+                    "hasRole('ADMINISTRATOR')";
+
 }

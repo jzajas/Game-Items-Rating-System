@@ -34,11 +34,6 @@ public class UserService {
 
     @Transactional
     public void createNewUser(User user) {
-
-        log.info(user.getEmail());
-        log.info(user.getEmail());
-        log.info(user.getEmail());
-
         if (emailAlreadyExists(user.getEmail())) {
            throw new EmailAlreadyInUseException();
         }
