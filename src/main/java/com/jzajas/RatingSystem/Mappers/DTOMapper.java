@@ -1,9 +1,6 @@
 package com.jzajas.RatingSystem.Mappers;
 
-import com.jzajas.RatingSystem.DTO.CommentDTO;
-import com.jzajas.RatingSystem.DTO.GameObjectDTO;
-import com.jzajas.RatingSystem.DTO.UserDTO;
-import com.jzajas.RatingSystem.DTO.UserRegistrationDTO;
+import com.jzajas.RatingSystem.DTO.*;
 import com.jzajas.RatingSystem.Entities.Comment;
 import com.jzajas.RatingSystem.Entities.GameObject;
 import com.jzajas.RatingSystem.Entities.User;
@@ -61,5 +58,25 @@ public class DTOMapper {
         dto.setCategory(String.valueOf(gameObject.getCategory()));
 
         return dto;
+    }
+
+    public GameObject convertFromGameObjectUpdateDTO(GameObjectUpdateDTO dto, GameObject oldGameObject) {
+
+        oldGameObject.setTitle(dto.getTitle());
+        oldGameObject.setText(dto.getText());
+        oldGameObject.setCategory(dto.getCategory());
+
+        return oldGameObject;
+    }
+
+    public GameObject convertFromGameObjectRegistrationDTO(GameObjectRegistrationDTO dto) {
+        GameObject newGameObject = new GameObject();
+
+        newGameObject.setTitle(dto.getTitle());
+        newGameObject.setText(dto.getText());
+        newGameObject.setAuthorID(dto.getAuthorId());
+        newGameObject.setCategory(dto.getCategory());
+
+        return newGameObject;
     }
 }

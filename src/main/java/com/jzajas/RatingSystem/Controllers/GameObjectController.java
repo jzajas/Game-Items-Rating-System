@@ -1,12 +1,13 @@
 package com.jzajas.RatingSystem.Controllers;
 
 import com.jzajas.RatingSystem.DTO.GameObjectDTO;
-import com.jzajas.RatingSystem.Entities.GameObject;
+import com.jzajas.RatingSystem.DTO.GameObjectRegistrationDTO;
+import com.jzajas.RatingSystem.DTO.GameObjectUpdateDTO;
+import com.jzajas.RatingSystem.Security.CustomSecurityExpressions;
 import com.jzajas.RatingSystem.Services.GameObjectService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,10 +24,10 @@ public class GameObjectController {
         this.gameObjectService = gameObjectService;
     }
 
-    @Secured("ROLE_SELLER")
+    @PreAuthorize("hasRole('SELLER')")
     @PostMapping("/")
-    public ResponseEntity<Void> addNewGameObject(@RequestBody GameObject gameObject) {
-        gameObjectService.createNewGameObject(gameObject);
+    public ResponseEntity<Void> addNewGameObject(@Valid @RequestBody GameObjectRegistrationDTO dto) {
+        gameObjectService.createNewGameObject(dto);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
@@ -36,20 +37,17 @@ public class GameObjectController {
         return ResponseEntity.ok(allGameObjects);
     }
 
-//    TODO only owner can edit object
-    @PreAuthorize("#objectId == authentication.principal.id")
-//    @PostAuthorize("returnObject.id == authentication.principal.id")
     @PutMapping("/{objectId}")
-    public ResponseEntity<Void> editGameObject(@PathVariable Long objectId, @RequestBody GameObject gameObject) {
-        gameObjectService.updateGameObject(objectId, gameObject);
+    @PreAuthorize(CustomSecurityExpressions.GAME_OBJECT_OWNER_BY_ID_OR_ADMIN)
+    public ResponseEntity<Void> editGameObject(@PathVariable Long objectId, @Valid @RequestBody GameObjectUpdateDTO dto) {
+        gameObjectService.updateGameObject(objectId, dto);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-//    TODO only owner can delete object
-    @PreAuthorize("#objectId == authentication.principal.id")
-    @DeleteMapping("/{gameObjectId}")
-    public ResponseEntity<Void> deleteGameObject(@PathVariable Long gameObjectId) {
-        gameObjectService.deleteGameObjectById(gameObjectId);
+    @DeleteMapping("/{objectId}")
+    @PreAuthorize(CustomSecurityExpressions.GAME_OBJECT_OWNER_BY_ID_OR_ADMIN)
+    public ResponseEntity<Void> deleteGameObject(@PathVariable Long objectId) {
+        gameObjectService.deleteGameObjectById(objectId);
         return ResponseEntity.noContent().build();
     }
 }

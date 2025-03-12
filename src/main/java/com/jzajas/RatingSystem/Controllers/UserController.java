@@ -9,12 +9,16 @@ import com.jzajas.RatingSystem.Entities.User;
 import com.jzajas.RatingSystem.Mappers.DTOMapper;
 import com.jzajas.RatingSystem.Services.UserService;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,6 +28,7 @@ import java.util.List;
 @RequestMapping("/users")
 public class UserController {
 
+    private static final Logger log = LoggerFactory.getLogger(UserController.class);
     private final UserService userService;
     private final DTOMapper mapper;
     private final AuthenticationManager authenticationManager;
@@ -80,5 +85,17 @@ public class UserController {
     ) {
         List<UserScoreDTO> topSellers = userService.getTopSellersByCategory(display, category);
         return ResponseEntity.ok(topSellers);
+    }
+
+
+    @GetMapping("/user")
+    public String getUser(@AuthenticationPrincipal UserDetails userDetails) {
+        log.info(userDetails.getAuthorities().toString());
+        log.info(userDetails.getAuthorities().toString());
+        log.info(userDetails.getAuthorities().toString());
+        log.info(userDetails.getAuthorities().toString());
+        log.info(userDetails.getAuthorities().toString());
+
+        return "User Details: " + userDetails.getUsername();
     }
 }

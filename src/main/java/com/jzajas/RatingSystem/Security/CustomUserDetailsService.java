@@ -1,4 +1,4 @@
-package com.jzajas.RatingSystem.Services;
+package com.jzajas.RatingSystem.Security;
 
 import com.jzajas.RatingSystem.Entities.User;
 import com.jzajas.RatingSystem.Exceptions.UserEmailNotFoundException;

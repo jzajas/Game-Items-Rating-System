@@ -1,6 +1,6 @@
 package com.jzajas.RatingSystem.Configuration;
 
-import com.jzajas.RatingSystem.Services.CustomUserDetailsService;
+import com.jzajas.RatingSystem.Security.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
