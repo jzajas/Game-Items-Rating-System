@@ -8,7 +8,6 @@ import com.jzajas.RatingSystem.Services.CommentService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -56,18 +55,29 @@ public class CommentController {
         return ResponseEntity.ok(comment);
     }
 
-    @PostAuthorize(CustomSecurityExpressions.COMMENT_OWNER_BY_ID_OR_ADMIN)
+    @PreAuthorize(CustomSecurityExpressions.COMMENT_HAS_OWNER_BY_ID_OR_ADMIN)
     @PutMapping("/{userId}/comments/{commentId}")
-    public ResponseEntity<Void> updateComment(@PathVariable Long userId, @PathVariable Long commentId, @Valid @RequestBody CommentUpdateDTO dto) {
-        commentService.updateCommentById(commentId, dto);
+    public ResponseEntity<Void> updateComment(
+            @PathVariable Long userId,
+            @PathVariable Long commentId,
+            @Valid @RequestBody CommentUpdateDTO dto,
+            Authentication authentication
+    ) {
+        String userEmail = authentication.getName();
+        commentService.updateCommentById(commentId, dto, userEmail);
         return new ResponseEntity<>(HttpStatus.OK);
 
     }
 
-    @PostAuthorize(CustomSecurityExpressions.COMMENT_OWNER_BY_ID_OR_ADMIN)
+    @PreAuthorize(CustomSecurityExpressions.COMMENT_HAS_OWNER_BY_ID_OR_ADMIN)
     @DeleteMapping("/{userId}/comments/{commentId}")
-    public ResponseEntity<Void> deleteComment(@PathVariable Long userId, @PathVariable Long commentId) {
-        commentService.deleteCommentById(commentId);
+    public ResponseEntity<Void> deleteComment(
+            @PathVariable Long userId,
+            @PathVariable Long commentId,
+            Authentication authentication
+    ) {
+        String userEmail = authentication.getName();
+        commentService.deleteCommentById(commentId, userEmail);
         return ResponseEntity.noContent().build();
     }
 }

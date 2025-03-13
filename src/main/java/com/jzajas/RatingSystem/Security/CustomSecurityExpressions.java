@@ -13,4 +13,10 @@ public class CustomSecurityExpressions {
             "@commentService.findCommentById(#commentId).getAuthorID().getEmail() == authentication.name or " +
                     "hasRole('ADMINISTRATOR')";
 
+
+    public static final String COMMENT_HAS_OWNER_BY_ID_OR_ADMIN =
+            "(@commentService.findCommentById(#commentId).getAuthorID() != null and " +
+                    "@commentService.findCommentById(#commentId).getAuthorID().getEmail() == authentication.name) or " +
+                    "hasRole('ADMINISTRATOR')";
+
 }

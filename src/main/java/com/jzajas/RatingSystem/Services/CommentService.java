@@ -67,25 +67,26 @@ public class CommentService {
 
     @Transactional(readOnly = true)
     public List<CommentDTO> findAllUserComments(Long id, boolean Posted) {
-        if(userRepository.existsById(id)) {
-            List<Comment> allComments;
-            if (Posted) {
-                allComments =  commentRepository.findAllPostedCommentsByUserId(id);
-            } else {
-                allComments =  commentRepository.findAllReceivedCommentsByUserId(id);
-            }
-            return allComments.stream()
-                    .map(mapper::convertToCommentDTO)
-                    .collect(Collectors.toList());
+        if(!userRepository.existsById(id)) throw new UserNotFoundException(id);
+
+        List<Comment> allComments;
+        if (Posted) {
+            allComments =  commentRepository.findAllPostedCommentsByUserId(id);
         } else {
-            throw new UserNotFoundException(id);
+            allComments =  commentRepository.findAllReceivedCommentsByUserId(id);
         }
+
+        return allComments.stream()
+                .map(mapper::convertToCommentDTO)
+                .collect(Collectors.toList());
     }
 
     @Transactional
-    public void updateCommentById(Long id, CommentUpdateDTO dto) {
-        Comment oldComment = findCommentById(id);
-        if (oldComment.getAuthorID() == null) throw new BadRequestException("Cannot update anonymous comment");
+    public void updateCommentById(Long commentId, CommentUpdateDTO dto, String email) {
+        Comment oldComment = findCommentById(commentId);
+        if (oldComment.getAuthorID() == null && !userRepository.isAdministrator(email)) {
+            throw new BadRequestException("Cannot update anonymous comment");
+        }
 
         if (isRatingValid(dto.getRating())) {
             oldComment.setRating(dto.getRating());
@@ -97,8 +98,12 @@ public class CommentService {
     }
 
     @Transactional
-    public void deleteCommentById(Long id) {
-        commentRepository.deleteById(id);
+    public void deleteCommentById(Long commentId, String email) {
+        Comment comment = findCommentById(commentId);
+        if (comment.getAuthorID() == null && !userRepository.isAdministrator(email)) {
+            throw new BadRequestException("Cannot update anonymous comment");
+        }
+        commentRepository.deleteById(commentId);
     }
 
     private boolean isRatingValid(int rating) {

@@ -15,6 +15,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByEmail(String email);
 
+    @Query(value = "SELECT EXISTS (SELECT 1 FROM users u WHERE u.email = :email AND u.role = 'ADMINISTRATOR')",
+            nativeQuery = true)
+    boolean isAdministrator(@Param("email") String email);
+
     @Query(value = "SELECT * FROM comments WHERE receiver = :userId", nativeQuery = true)
     List<Comment> findAllCommentsForUserById(@Param("userId") Long userId);
 
