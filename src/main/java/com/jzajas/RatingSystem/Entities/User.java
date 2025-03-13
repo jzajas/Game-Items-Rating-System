@@ -16,26 +16,26 @@ import java.util.Date;
 @AllArgsConstructor
 @NamedNativeQuery(
         name = "find_top_sellers",
-        query = "SELECT u.id as id, u.first_name as first_name, u.last_name as last_name, u.created_at as created_at, " +
+        query = "SELECT u.first_name, u.last_name, u.created_at, " +
                 "COALESCE(AVG(c.rating), 0) as avg_score, " +
                 "COUNT(c.id) as comment_count " +
                 "FROM users u " +
                 "LEFT JOIN comments c ON u.id = c.receiver " +
-                "GROUP BY u.id, u.first_name, u.last_name, u.created_at " +
+                "GROUP BY u.id " +
                 "ORDER BY avg_score DESC " +
                 "LIMIT :limit",
         resultSetMapping = "user_score_dto"
 )
 @NamedNativeQuery(
         name = "find_top_sellers_by_category",
-        query = "SELECT u.id as id, u.first_name as first_name, u.last_name as last_name, u.created_at as created_at, " +
+        query = "SELECT u.first_name, u.last_name, u.created_at, " +
                 "COALESCE(AVG(c.rating), 0) as avg_score, " +
                 "COUNT(c.id) as comment_count " +
                 "FROM users u " +
                 "INNER JOIN game_objects g ON u.id = g.author_id " +
                 "LEFT JOIN comments c ON u.id = c.receiver " +
-                "WHERE (:category IS NULL OR g.category = :category) " +
-                "GROUP BY u.id, u.first_name, u.last_name, u.created_at " +
+                "WHERE g.category = :category " +
+                "GROUP BY u.id " +
                 "ORDER BY avg_score DESC " +
                 "LIMIT :limit",
         resultSetMapping = "user_score_dto"

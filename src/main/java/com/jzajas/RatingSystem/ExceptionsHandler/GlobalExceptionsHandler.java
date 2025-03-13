@@ -8,6 +8,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 @Slf4j
 @RestControllerAdvice
@@ -34,7 +35,10 @@ public class GlobalExceptionsHandler {
     @ExceptionHandler(EmailAlreadyInUseException.class)
     public ResponseEntity<String> handleEmailAlreadyInUseException(EmailAlreadyInUseException ex) {
         log.info("Caught EmailAlreadyInUseException: ", ex);
-        return new ResponseEntity<>("Provided email is already in use", HttpStatus.CONFLICT);
+        return new ResponseEntity<>(
+                "Provided email: " + ex.getMessage() + " is already in use",
+                HttpStatus.CONFLICT
+        );
     }
 
     @ExceptionHandler(InvalidRatingValueException.class)
@@ -72,22 +76,36 @@ public class GlobalExceptionsHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<String> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
-        log.info("Caught BadRequestException: ", ex);
+        log.info("Caught MethodArgumentNotValidException: ", ex);
         return new ResponseEntity<>(
                 ex.getBindingResult().getFieldError().getDefaultMessage(),
                 HttpStatus.BAD_REQUEST
         );
     }
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<String> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex) {
+        log.info("Method argument mismatch exception occurred: ", ex);
+        return new ResponseEntity<> (
+                "name: " + ex.getName() + "\nmessage: " + ex.getMessage(),
+                HttpStatus.BAD_REQUEST
+        );
+    }
 
     @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<String> handleAccessDeniedException(AccessDeniedException e) {
-        log.info("Uncaught exception occurred: ", e);
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    public ResponseEntity<String> handleAccessDeniedException(AccessDeniedException ex) {
+        log.info("Access denied exception occurred: ", ex);
+        return new ResponseEntity<>(
+                ex.getMessage(),
+                HttpStatus.FORBIDDEN
+        );
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleUncaughtException(Exception e) {
-        log.info("Uncaught exception occurred: ", e);
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    public ResponseEntity<String> handleUncaughtException(Exception ex) {
+        log.info("Uncaught exception occurred: ", ex);
+        return new ResponseEntity<>(
+                ex.getMessage(),
+                HttpStatus.INTERNAL_SERVER_ERROR
+        );
     }
 }

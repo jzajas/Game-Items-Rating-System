@@ -1,6 +1,7 @@
 package com.jzajas.RatingSystem.Services;
 
 import com.jzajas.RatingSystem.DTO.UserDTO;
+import com.jzajas.RatingSystem.DTO.UserRegistrationDTO;
 import com.jzajas.RatingSystem.DTO.UserScoreDTO;
 import com.jzajas.RatingSystem.Entities.Comment;
 import com.jzajas.RatingSystem.Entities.GameCategory;
@@ -33,12 +34,12 @@ public class UserService {
     }
 
     @Transactional
-    public void createNewUser(User user) {
-        if (emailAlreadyExists(user.getEmail())) {
-           throw new EmailAlreadyInUseException();
-        }
+    public void createNewUser(UserRegistrationDTO dto) {
+        if (emailAlreadyExists(dto.getEmail())) throw new EmailAlreadyInUseException(dto.getEmail());
 
+        User user = mapper.convertFromUserRegistrationDTO(dto);
         user.setPassword(encoder.encode(user.getPassword()));
+
         userRepository.save(user);
     }
 
@@ -59,21 +60,17 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public List<Comment> getAllCommentsForUserById(Long id) {
-        if (userRepository.existsById(id)) {
-            return userRepository.findAllCommentsForUserById(id);
-        } else {
-            throw new UserNotFoundException(id);
-        }
+        if (!userRepository.existsById(id)) throw new UserNotFoundException(id);
+        return userRepository.findAllCommentsForUserById(id);
     }
 
     @Transactional(readOnly = true)
-    public List<UserScoreDTO> getTopSellers(int number) {
-        return userRepository.findTopSellersByRating(number);
-    }
-
-    @Transactional(readOnly = true)
-    public List<UserScoreDTO> getTopSellersByCategory(int number, GameCategory category) {
-        return userRepository.findTopSellersByRatingAndCategory(number, String.valueOf(category));
+    public List<UserScoreDTO> getTopSellers(int number, GameCategory category) {
+       if (category == null) {
+            return userRepository.findTopSellersByRating(number);
+       } else {
+           return userRepository.findTopSellersByRatingAndCategory(number, String.valueOf(category));
+       }
     }
 
     @Transactional(readOnly = true)
@@ -81,7 +78,7 @@ public class UserService {
         List<Comment> commentList = getAllCommentsForUserById(id);
 
         return commentList
-                .parallelStream()
+                .stream()
                 .mapToDouble(Comment::getRating)
                 .average()
                 .orElse(0);

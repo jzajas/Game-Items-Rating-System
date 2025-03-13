@@ -5,8 +5,6 @@ import com.jzajas.RatingSystem.DTO.UserLoginDTO;
 import com.jzajas.RatingSystem.DTO.UserRegistrationDTO;
 import com.jzajas.RatingSystem.DTO.UserScoreDTO;
 import com.jzajas.RatingSystem.Entities.GameCategory;
-import com.jzajas.RatingSystem.Entities.User;
-import com.jzajas.RatingSystem.Mappers.DTOMapper;
 import com.jzajas.RatingSystem.Services.UserService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
@@ -16,9 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,20 +26,16 @@ public class UserController {
 
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
     private final UserService userService;
-    private final DTOMapper mapper;
     private final AuthenticationManager authenticationManager;
 
-    public UserController(UserService userService, DTOMapper mapper, AuthenticationManager authenticationManager) {
+    public UserController(UserService userService, AuthenticationManager authenticationManager) {
         this.userService = userService;
-        this.mapper = mapper;
         this.authenticationManager = authenticationManager;
     }
 
     @PostMapping("/register")
     public ResponseEntity<Void> createUser(@Valid @RequestBody UserRegistrationDTO dto) {
-        User user = mapper.convertFromUserRegistrationDTO(dto);
-//        TODO might want ot send the dto to service and there map it to user
-        userService.createNewUser(user);
+        userService.createNewUser(dto);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
@@ -72,28 +64,13 @@ public class UserController {
         Double score = userService.calculateUserScore(userId);
         return ResponseEntity.ok(score);
     }
-    
+
     @GetMapping("/score")
-    public ResponseEntity<List<UserScoreDTO>> getTopSellers(@RequestParam(defaultValue = "10") int display) {
-        List<UserScoreDTO> topSellers = userService.getTopSellers(display);
-        return ResponseEntity.ok(topSellers);
-
-    }
-
-    @GetMapping("/score/{category}")
     public ResponseEntity<List<UserScoreDTO>> getTopSellersForCategory(
             @RequestParam(defaultValue = "10") int display,
-            @PathVariable GameCategory category
+            @RequestParam(required = false) GameCategory category
     ) {
-        List<UserScoreDTO> topSellers = userService.getTopSellersByCategory(display, category);
+        List<UserScoreDTO> topSellers = userService.getTopSellers(display, category);
         return ResponseEntity.ok(topSellers);
-    }
-
-
-    @GetMapping("/user")
-    public void getUser(@AuthenticationPrincipal UserDetails userDetails, Authentication authentication) {
-        System.out.println(userDetails);
-        System.out.println();
-        System.out.println(authentication);
     }
 }
