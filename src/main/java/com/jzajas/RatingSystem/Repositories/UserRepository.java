@@ -19,6 +19,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
             nativeQuery = true)
     boolean isAdministrator(@Param("email") String email);
 
+    @Query(value = "SELECT * FROM users WHERE status = Pending", nativeQuery = true)
+    List<User> findAllUsersWithPendingStatus();
+
+//    TODO find what method uses it and use CommentRepository instead
     @Query(value = "SELECT * FROM comments WHERE receiver = :userId", nativeQuery = true)
     List<Comment> findAllCommentsForUserById(@Param("userId") Long userId);
 
