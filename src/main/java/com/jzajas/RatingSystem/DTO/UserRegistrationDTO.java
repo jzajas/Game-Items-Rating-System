@@ -1,8 +1,5 @@
 package com.jzajas.RatingSystem.DTO;
 
-import com.jzajas.RatingSystem.Entities.Role;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -32,7 +29,4 @@ public class UserRegistrationDTO {
     @NotNull(message = "Email required")
     @NotBlank(message = "Email required")
     private String email;
-
-    @Enumerated(EnumType.STRING)
-    private Role role;
 }

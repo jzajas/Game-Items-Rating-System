@@ -1,9 +1,7 @@
 package com.jzajas.RatingSystem.Mappers;
 
 import com.jzajas.RatingSystem.DTO.*;
-import com.jzajas.RatingSystem.Entities.Comment;
-import com.jzajas.RatingSystem.Entities.GameObject;
-import com.jzajas.RatingSystem.Entities.User;
+import com.jzajas.RatingSystem.Entities.*;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -20,7 +18,7 @@ public class DTOMapper {
         return dto;
     }
 
-    public User convertFromUserRegistrationDTO(UserRegistrationDTO dto) {
+    public User convertFromUserRegistrationDTOtoUser(UserRegistrationDTO dto) {
         User user = new User();
 
         user.setFirstName(dto.getFirstName());
@@ -28,7 +26,18 @@ public class DTOMapper {
         user.setPassword(dto.getPassword());
         user.setEmail(dto.getEmail());
 
-        if (dto.getRole() != null) user.setRole(dto.getRole());
+        return user;
+    }
+
+    public User convertFromUserRegistrationDTOtoAdmin(UserRegistrationDTO dto) {
+        User user = new User();
+
+        user.setFirstName(dto.getFirstName());
+        user.setLastName(dto.getLastName());
+        user.setPassword(dto.getPassword());
+        user.setEmail(dto.getEmail());
+        user.setRole(Role.ADMINISTRATOR);
+        user.setStatus(Status.APPROVED);
 
         return user;
     }

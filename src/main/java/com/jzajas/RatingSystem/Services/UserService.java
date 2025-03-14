@@ -37,7 +37,7 @@ public class UserService {
     public void createNewUser(UserRegistrationDTO dto) {
         if (emailAlreadyExists(dto.getEmail())) throw new EmailAlreadyInUseException(dto.getEmail());
 
-        User user = mapper.convertFromUserRegistrationDTO(dto);
+        User user = mapper.convertFromUserRegistrationDTOtoUser(dto);
         user.setPassword(encoder.encode(user.getPassword()));
 
         userRepository.save(user);
