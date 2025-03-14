@@ -4,11 +4,9 @@ import com.jzajas.RatingSystem.DTO.CommentDTO;
 import com.jzajas.RatingSystem.DTO.CommentRegistrationDTO;
 import com.jzajas.RatingSystem.DTO.CommentUpdateDTO;
 import com.jzajas.RatingSystem.Entities.Comment;
+import com.jzajas.RatingSystem.Entities.Status;
 import com.jzajas.RatingSystem.Entities.User;
-import com.jzajas.RatingSystem.Exceptions.BadRequestException;
-import com.jzajas.RatingSystem.Exceptions.CommentNotFoundException;
-import com.jzajas.RatingSystem.Exceptions.InvalidRatingValueException;
-import com.jzajas.RatingSystem.Exceptions.UserNotFoundException;
+import com.jzajas.RatingSystem.Exceptions.*;
 import com.jzajas.RatingSystem.Mappers.DTOMapper;
 import com.jzajas.RatingSystem.Repositories.CommentRepository;
 import com.jzajas.RatingSystem.Repositories.UserRepository;
@@ -37,6 +35,9 @@ public class CommentService {
     public void createNewComment(CommentRegistrationDTO dto, Long userId, boolean isAnonymous) {
         if (!isRatingValid(dto.getRating())) throw new InvalidRatingValueException(dto.getRating());
         if (userRepository.findById(userId).isEmpty()) throw new UserNotFoundException(userId);
+        if (dto.getAuthorID() != null && dto.getAuthorID().getStatus() != Status.APPROVED){
+            throw new AccountNotApprovedException("Account is not approved");
+        }
 
         User user = userRepository.findById(userId).get();
         Comment comment;

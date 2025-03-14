@@ -15,4 +15,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 
     @Query(value = "SELECT * FROM comments WHERE receiver = :userId", nativeQuery = true)
     List<Comment> findAllReceivedCommentsByUserId(@Param("userId") Long userId);
+
+    @Query(value = "SELECT * FROM comments WHERE status = PENDING", nativeQuery = true)
+    List<Comment> findAllCommentsWithPendingStatus();
 }

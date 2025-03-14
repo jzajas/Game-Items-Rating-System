@@ -4,6 +4,8 @@ import com.jzajas.RatingSystem.DTO.GameObjectDTO;
 import com.jzajas.RatingSystem.DTO.GameObjectRegistrationDTO;
 import com.jzajas.RatingSystem.DTO.GameObjectUpdateDTO;
 import com.jzajas.RatingSystem.Entities.GameObject;
+import com.jzajas.RatingSystem.Entities.Status;
+import com.jzajas.RatingSystem.Exceptions.AccountNotApprovedException;
 import com.jzajas.RatingSystem.Exceptions.GameObjectNotFoundException;
 import com.jzajas.RatingSystem.Mappers.DTOMapper;
 import com.jzajas.RatingSystem.Repositories.GameObjectRepository;
@@ -27,6 +29,9 @@ public class GameObjectService {
 
     @Transactional
     public void createNewGameObject(GameObjectRegistrationDTO dto) {
+        if (dto.getAuthorId() != null && dto.getAuthorId().getStatus() != Status.APPROVED){
+            throw new AccountNotApprovedException("Account is not approved");
+        }
         GameObject newGameObject = mapper.convertFromGameObjectRegistrationDTO(dto);
         gameObjectRepository.save(newGameObject);
     }

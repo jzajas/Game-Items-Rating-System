@@ -34,12 +34,25 @@ public class Comment {
     @Column(name = "created_at", nullable = false)
     private Date createdAt;
 
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "updated_at", nullable = false)
+    private Date updatedAt;
+
     @Column(name = "rating", nullable = false)
     private int rating;
 
+    @Column(name = "status", nullable = false)
+    private Status status;
+
 
     @PrePersist
-    public void addNewDateToComment() {
+    private void addNewDateToComment() {
         this.createdAt = new Date();
+        this.updatedAt = new Date();
+    }
+
+    @PreUpdate
+    private void updateDate() {
+        this.updatedAt = new Date();
     }
 }

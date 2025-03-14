@@ -68,6 +68,7 @@ public class DTOMapper {
         comment.setReceiver(dto.getReceiverID());
         comment.setAuthorID(dto.getAuthorID());
         comment.setRating(dto.getRating());
+        comment.setStatus(Status.APPROVED);
 
         return comment;
     }
@@ -79,6 +80,7 @@ public class DTOMapper {
         comment.setReceiver(dto.getReceiverID());
         comment.setAuthorID(null);
         comment.setRating(dto.getRating());
+        comment.setStatus(Status.PENDING);
 
         return comment;
     }

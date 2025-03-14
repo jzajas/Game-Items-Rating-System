@@ -1,6 +1,7 @@
 package com.jzajas.RatingSystem.Controllers;
 
 import com.jzajas.RatingSystem.DTO.UserRegistrationDTO;
+import com.jzajas.RatingSystem.Entities.Comment;
 import com.jzajas.RatingSystem.Entities.User;
 import com.jzajas.RatingSystem.Services.AdminService;
 import jakarta.validation.Valid;
@@ -11,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@PreAuthorize("isAdmin")
+@PreAuthorize("hasRole('ADMINISTRATOR')")
 @RestController("/admin")
 public class AdminController {
 
@@ -21,11 +22,22 @@ public class AdminController {
         this.adminService = adminService;
     }
 
-    @PutMapping("/register")
+    @PostMapping("/register")
     public ResponseEntity<Void> registerAdmin(@Valid @RequestBody UserRegistrationDTO dto) {
         adminService.createAdmin(dto);
-
         return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
+    @GetMapping("/pending/users")
+    public ResponseEntity<List<User>> getPendingUsers() {
+        List<User> allPendingUsers = adminService.getAllPendingUsers();
+        return new ResponseEntity<>(allPendingUsers, HttpStatus.OK);
+    }
+
+    @GetMapping("/pending/comments")
+    public ResponseEntity<List<Comment>> getPendingComments() {
+        List<Comment> allPendingComments = adminService.getAllPendingComments();
+        return new ResponseEntity<>(allPendingComments, HttpStatus.OK);
     }
 
     @PutMapping("/approve/user/{id}")
@@ -40,16 +52,15 @@ public class AdminController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-
-    @GetMapping("/pending/users")
-    public ResponseEntity<List<User>> getPendingUsers() {
-        List<User> allPendingUsers = adminService.getAllPendingUsers();
-        return new ResponseEntity<>(allPendingUsers, HttpStatus.OK);
+    @PutMapping("/approve/comment/{id}")
+    public ResponseEntity<Void> approveComment(@PathVariable Long id) {
+        adminService.approveComment(id);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @GetMapping("/pending/comments")
-    public ResponseEntity<Void> getPendingComments() {
-
+    @PutMapping("/decline/comment/{id}")
+    public ResponseEntity<Void> declineComment(@PathVariable Long id) {
+        adminService.declineComment(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

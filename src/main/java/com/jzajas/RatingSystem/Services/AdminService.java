@@ -1,8 +1,10 @@
 package com.jzajas.RatingSystem.Services;
 
 import com.jzajas.RatingSystem.DTO.UserRegistrationDTO;
+import com.jzajas.RatingSystem.Entities.Comment;
 import com.jzajas.RatingSystem.Entities.Status;
 import com.jzajas.RatingSystem.Entities.User;
+import com.jzajas.RatingSystem.Exceptions.CommentNotFoundException;
 import com.jzajas.RatingSystem.Exceptions.EmailAlreadyInUseException;
 import com.jzajas.RatingSystem.Exceptions.UserNotFoundException;
 import com.jzajas.RatingSystem.Mappers.DTOMapper;
@@ -46,6 +48,11 @@ public class AdminService {
         return userRepository.findAllUsersWithPendingStatus();
     }
 
+    @Transactional(readOnly = true)
+    public List<Comment> getAllPendingComments() {
+        return commentRepository.findAllCommentsWithPendingStatus();
+    }
+
     @Transactional
     public void approveUser(Long id) {
         User user = findUserByID(id);
@@ -60,6 +67,20 @@ public class AdminService {
         userRepository.save(user);
     }
 
+    @Transactional
+    public void approveComment(Long id) {
+        Comment comment = findCommentByID(id);
+        comment.setStatus(Status.APPROVED);
+        commentRepository.save(comment);
+    }
+
+    @Transactional
+    public void declineComment(Long id) {
+        Comment comment = findCommentByID(id);
+        comment.setStatus(Status.DECLINED);
+        commentRepository.save(comment);
+    }
+
 
     @Transactional(readOnly = true)
     private User findUserByID(Long id) {
@@ -68,4 +89,10 @@ public class AdminService {
                 .orElseThrow(() -> new UserNotFoundException(id));
     }
 
+    @Transactional(readOnly = true)
+    private Comment findCommentByID(Long id) {
+        return commentRepository
+                .findById(id)
+                .orElseThrow(() -> new CommentNotFoundException(id));
+    }
 }

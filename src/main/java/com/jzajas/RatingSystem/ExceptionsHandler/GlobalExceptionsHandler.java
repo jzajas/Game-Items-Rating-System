@@ -82,6 +82,7 @@ public class GlobalExceptionsHandler {
                 HttpStatus.BAD_REQUEST
         );
     }
+
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<String> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex) {
         log.info("Method argument mismatch exception occurred: ", ex);
@@ -94,18 +95,18 @@ public class GlobalExceptionsHandler {
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<String> handleAccessDeniedException(AccessDeniedException ex) {
         log.info("Access denied exception occurred: ", ex);
-        return new ResponseEntity<>(
-                ex.getMessage(),
-                HttpStatus.FORBIDDEN
-        );
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(AccountNotApprovedException.class)
+    public ResponseEntity<String> handleAccountNotApprovedException(AccountNotApprovedException ex) {
+        log.info("Caught AccountNotApprovedException: ", ex);
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleUncaughtException(Exception ex) {
         log.info("Uncaught exception occurred: ", ex);
-        return new ResponseEntity<>(
-                ex.getMessage(),
-                HttpStatus.INTERNAL_SERVER_ERROR
-        );
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
