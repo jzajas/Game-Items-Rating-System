@@ -21,7 +21,7 @@ import java.util.Date;
                 "COUNT(c.id) as comment_count " +
                 "FROM users u " +
                 "LEFT JOIN comments c ON u.id = c.receiver " +
-//                "WHERE u.status = 'Approved' " +
+                "WHERE u.status = 0 and u.role = 'SELLER' " +
                 "GROUP BY u.id " +
                 "ORDER BY avg_score DESC " +
                 "LIMIT :limit",
@@ -35,8 +35,7 @@ import java.util.Date;
                 "FROM users u " +
                 "INNER JOIN game_objects g ON u.id = g.author_id " +
                 "LEFT JOIN comments c ON u.id = c.receiver " +
-                "WHERE g.category = :category " +
-//                "WHERE g.category = :category AND u.status = Approved " +
+                "WHERE g.category = :category AND u.status = 0 and u.role = 'SELLER' " +
                 "GROUP BY u.id " +
                 "ORDER BY avg_score DESC " +
                 "LIMIT :limit",

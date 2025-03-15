@@ -1,7 +1,6 @@
 package com.jzajas.RatingSystem.Repositories;
 
 import com.jzajas.RatingSystem.DTO.UserScoreDTO;
-import com.jzajas.RatingSystem.Entities.Comment;
 import com.jzajas.RatingSystem.Entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -19,12 +18,11 @@ public interface UserRepository extends JpaRepository<User, Long> {
             nativeQuery = true)
     boolean isAdministrator(@Param("email") String email);
 
+    @Query("SELECT u FROM User u WHERE u.id = :id AND u.status = 0")
+    Optional<User> findUserWithApprovedStatus(@Param("id") Long id);
+
     @Query(value = "SELECT * FROM users WHERE status = Pending", nativeQuery = true)
     List<User> findAllUsersWithPendingStatus();
-
-//    TODO find what method uses it and use CommentRepository instead
-    @Query(value = "SELECT * FROM comments WHERE receiver = :userId", nativeQuery = true)
-    List<Comment> findAllCommentsForUserById(@Param("userId") Long userId);
 
     @Query(name = "find_top_sellers", nativeQuery = true)
     List<UserScoreDTO> findTopSellersByRating(@Param("limit") int limit);

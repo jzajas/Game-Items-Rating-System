@@ -9,9 +9,8 @@ import com.jzajas.RatingSystem.Entities.User;
 import com.jzajas.RatingSystem.Exceptions.EmailAlreadyInUseException;
 import com.jzajas.RatingSystem.Exceptions.UserNotFoundException;
 import com.jzajas.RatingSystem.Mappers.DTOMapper;
+import com.jzajas.RatingSystem.Repositories.CommentRepository;
 import com.jzajas.RatingSystem.Repositories.UserRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,15 +21,17 @@ import java.util.*;
 @Service
 public class UserService {
 
-    private static final Logger log = LoggerFactory.getLogger(UserService.class);
     private final UserRepository userRepository;
+    private final CommentRepository commentRepository;
     private final PasswordEncoder encoder;
     private final DTOMapper mapper;
 
-    public UserService(UserRepository userRepository, DTOMapper mapper, PasswordEncoder encoder) {
+    public UserService(CommentRepository commentRepository, UserRepository userRepository,
+                       PasswordEncoder encoder, DTOMapper mapper) {
+        this.commentRepository = commentRepository;
         this.userRepository = userRepository;
-        this.mapper = mapper;
         this.encoder = encoder;
+        this.mapper = mapper;
     }
 
     @Transactional
@@ -44,16 +45,9 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public User findUserById(Long id) {
-        return userRepository
-                .findById(id)
-                .orElseThrow(() -> new UserNotFoundException(id));
-    }
-
-    @Transactional(readOnly = true)
     public UserDTO findUserDTOById(Long id){
         User user = userRepository
-                .findById(id)
+                .findUserWithApprovedStatus(id)
                 .orElseThrow(() -> new UserNotFoundException(id));
         return mapper.convertToUserDTO(user);
     }
@@ -61,7 +55,7 @@ public class UserService {
     @Transactional(readOnly = true)
     public List<Comment> getAllCommentsForUserById(Long id) {
         if (!userRepository.existsById(id)) throw new UserNotFoundException(id);
-        return userRepository.findAllCommentsForUserById(id);
+        return commentRepository.findAllReceivedCommentsByUserId(id);
     }
 
     @Transactional(readOnly = true)
@@ -75,6 +69,7 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public double calculateUserScore(Long id) {
+        if (userRepository.findUserWithApprovedStatus(id).isEmpty()) throw new UserNotFoundException(id);
         List<Comment> commentList = getAllCommentsForUserById(id);
 
         return commentList
