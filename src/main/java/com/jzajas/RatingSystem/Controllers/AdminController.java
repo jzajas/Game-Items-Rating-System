@@ -13,7 +13,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @PreAuthorize("hasRole('ADMINISTRATOR')")
-@RestController("/admin")
+@RestController()
+@RequestMapping("/admin")
 public class AdminController {
 
     private final AdminService adminService;

@@ -21,7 +21,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("SELECT u FROM User u WHERE u.id = :id AND u.status = 0")
     Optional<User> findUserWithApprovedStatus(@Param("id") Long id);
 
-    @Query(value = "SELECT * FROM users WHERE status = Pending", nativeQuery = true)
+    @Query(value = "SELECT * FROM users WHERE status = 1", nativeQuery = true)
     List<User> findAllUsersWithPendingStatus();
 
     @Query(name = "find_top_sellers", nativeQuery = true)
