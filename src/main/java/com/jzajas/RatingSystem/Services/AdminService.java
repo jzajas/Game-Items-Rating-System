@@ -83,7 +83,6 @@ public class AdminService {
         commentRepository.save(comment);
     }
 
-
     @Transactional(readOnly = true)
     private User findUserByID(Long id) {
         return userRepository

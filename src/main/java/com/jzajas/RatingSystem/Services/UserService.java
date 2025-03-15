@@ -3,9 +3,7 @@ package com.jzajas.RatingSystem.Services;
 import com.jzajas.RatingSystem.DTO.UserDTO;
 import com.jzajas.RatingSystem.DTO.UserRegistrationDTO;
 import com.jzajas.RatingSystem.DTO.UserScoreDTO;
-import com.jzajas.RatingSystem.Entities.Comment;
-import com.jzajas.RatingSystem.Entities.GameCategory;
-import com.jzajas.RatingSystem.Entities.User;
+import com.jzajas.RatingSystem.Entities.*;
 import com.jzajas.RatingSystem.Exceptions.EmailAlreadyInUseException;
 import com.jzajas.RatingSystem.Exceptions.UserNotFoundException;
 import com.jzajas.RatingSystem.Mappers.DTOMapper;
@@ -69,7 +67,10 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public double calculateUserScore(Long id) {
-        if (userRepository.findUserWithApprovedStatus(id).isEmpty()) throw new UserNotFoundException(id);
+        Optional<User> user = userRepository.findById(id);
+        if (user.isEmpty() || user.get().getStatus() != Status.APPROVED || user.get().getRole() != Role.SELLER) {
+            throw new UserNotFoundException(id);
+        }
         List<Comment> commentList = getAllCommentsForUserById(id);
 
         return commentList
