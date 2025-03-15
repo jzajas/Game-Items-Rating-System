@@ -87,7 +87,6 @@ public class DTOMapper {
 
         newGameObject.setTitle(dto.getTitle());
         newGameObject.setText(dto.getText());
-        newGameObject.setAuthorID(dto.getAuthorId());
         newGameObject.setCategory(dto.getCategory());
 
         return newGameObject;

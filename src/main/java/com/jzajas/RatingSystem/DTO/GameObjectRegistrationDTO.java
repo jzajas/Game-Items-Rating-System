@@ -21,9 +21,6 @@ public class GameObjectRegistrationDTO {
 
     private String text;
 
-    @NotNull(message = "Author id required")
-    private User authorId;
-
     @Enumerated(EnumType.STRING)
     @NotNull(message = "Category required")
     private GameCategory category;

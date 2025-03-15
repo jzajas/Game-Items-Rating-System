@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,8 +27,10 @@ public class GameObjectController {
 
     @PreAuthorize("hasRole('SELLER')")
     @PostMapping("/")
-    public ResponseEntity<Void> addNewGameObject(@Valid @RequestBody GameObjectRegistrationDTO dto) {
-        gameObjectService.createNewGameObject(dto);
+    public ResponseEntity<Void> addNewGameObject(@Valid @RequestBody GameObjectRegistrationDTO dto,
+                                                 Authentication authentication
+    ) {
+        gameObjectService.createNewGameObject(dto, authentication);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
