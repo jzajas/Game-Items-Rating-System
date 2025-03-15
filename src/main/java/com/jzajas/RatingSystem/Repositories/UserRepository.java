@@ -1,6 +1,6 @@
 package com.jzajas.RatingSystem.Repositories;
 
-import com.jzajas.RatingSystem.DTO.UserScoreDTO;
+import com.jzajas.RatingSystem.DTO.Output.UserScoreDTO;
 import com.jzajas.RatingSystem.Entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

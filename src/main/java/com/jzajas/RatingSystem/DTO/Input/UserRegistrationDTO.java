@@ -1,4 +1,4 @@
-package com.jzajas.RatingSystem.DTO;
+package com.jzajas.RatingSystem.DTO.Input;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

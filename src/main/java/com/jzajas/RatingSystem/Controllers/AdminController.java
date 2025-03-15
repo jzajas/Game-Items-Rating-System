@@ -1,8 +1,9 @@
 package com.jzajas.RatingSystem.Controllers;
 
-import com.jzajas.RatingSystem.DTO.UserRegistrationDTO;
+import com.jzajas.RatingSystem.DTO.Input.UserRegistrationDTO;
+import com.jzajas.RatingSystem.DTO.Output.PendingCommentDTO;
+import com.jzajas.RatingSystem.DTO.Output.PendingUserDTO;
 import com.jzajas.RatingSystem.Entities.Comment;
-import com.jzajas.RatingSystem.Entities.User;
 import com.jzajas.RatingSystem.Services.AdminService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -30,14 +31,14 @@ public class AdminController {
     }
 
     @GetMapping("/pending/users")
-    public ResponseEntity<List<User>> getPendingUsers() {
-        List<User> allPendingUsers = adminService.getAllPendingUsers();
+    public ResponseEntity<List<PendingUserDTO>> getPendingUsers() {
+        List<PendingUserDTO> allPendingUsers = adminService.getAllPendingUsers();
         return new ResponseEntity<>(allPendingUsers, HttpStatus.OK);
     }
 
     @GetMapping("/pending/comments")
-    public ResponseEntity<List<Comment>> getPendingComments() {
-        List<Comment> allPendingComments = adminService.getAllPendingComments();
+    public ResponseEntity<List<PendingCommentDTO>> getPendingComments() {
+        List<PendingCommentDTO> allPendingComments = adminService.getAllPendingComments();
         return new ResponseEntity<>(allPendingComments, HttpStatus.OK);
     }
 

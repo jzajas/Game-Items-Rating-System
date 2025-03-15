@@ -1,4 +1,4 @@
-package com.jzajas.RatingSystem.DTO;
+package com.jzajas.RatingSystem.DTO.Output;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

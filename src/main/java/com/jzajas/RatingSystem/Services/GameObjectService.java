@@ -1,8 +1,7 @@
 package com.jzajas.RatingSystem.Services;
 
-import com.jzajas.RatingSystem.DTO.GameObjectDTO;
-import com.jzajas.RatingSystem.DTO.GameObjectRegistrationDTO;
-import com.jzajas.RatingSystem.DTO.GameObjectUpdateDTO;
+import com.jzajas.RatingSystem.DTO.Output.GameObjectDTO;
+import com.jzajas.RatingSystem.DTO.Input.GameObjectCreationDTO;
 import com.jzajas.RatingSystem.Entities.GameObject;
 import com.jzajas.RatingSystem.Entities.Status;
 import com.jzajas.RatingSystem.Entities.User;
@@ -35,7 +34,7 @@ public class GameObjectService {
     }
 
     @Transactional
-    public void createNewGameObject(GameObjectRegistrationDTO dto, Authentication authentication) {
+    public void createNewGameObject(GameObjectCreationDTO dto, Authentication authentication) {
         Optional<User> user = userRepository.findByEmail(authentication.getName());
         if (user.get().getStatus() != Status.APPROVED) {
             throw new AccountNotApprovedException("Account is not approved");
@@ -62,7 +61,7 @@ public class GameObjectService {
     }
 
     @Transactional
-    public void updateGameObject(Long objectId, GameObjectUpdateDTO dto) {
+    public void updateGameObject(Long objectId, GameObjectCreationDTO dto) {
         GameObject oldGameObject = getGameObjectByID(objectId);
         oldGameObject.setTitle(dto.getTitle());
         oldGameObject.setText(dto.getText());

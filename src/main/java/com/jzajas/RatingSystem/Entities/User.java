@@ -1,6 +1,6 @@
 package com.jzajas.RatingSystem.Entities;
 
-import com.jzajas.RatingSystem.DTO.UserScoreDTO;
+import com.jzajas.RatingSystem.DTO.Output.UserScoreDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

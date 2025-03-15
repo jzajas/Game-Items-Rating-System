@@ -1,8 +1,7 @@
 package com.jzajas.RatingSystem.Controllers;
 
-import com.jzajas.RatingSystem.DTO.GameObjectDTO;
-import com.jzajas.RatingSystem.DTO.GameObjectRegistrationDTO;
-import com.jzajas.RatingSystem.DTO.GameObjectUpdateDTO;
+import com.jzajas.RatingSystem.DTO.Output.GameObjectDTO;
+import com.jzajas.RatingSystem.DTO.Input.GameObjectCreationDTO;
 import com.jzajas.RatingSystem.Security.CustomSecurityExpressions;
 import com.jzajas.RatingSystem.Services.GameObjectService;
 import jakarta.validation.Valid;
@@ -27,7 +26,7 @@ public class GameObjectController {
 
     @PreAuthorize("hasRole('SELLER')")
     @PostMapping("/")
-    public ResponseEntity<Void> addNewGameObject(@Valid @RequestBody GameObjectRegistrationDTO dto,
+    public ResponseEntity<Void> addNewGameObject(@Valid @RequestBody GameObjectCreationDTO dto,
                                                  Authentication authentication
     ) {
         gameObjectService.createNewGameObject(dto, authentication);
@@ -42,7 +41,7 @@ public class GameObjectController {
 
     @PutMapping("/{objectId}")
     @PreAuthorize(CustomSecurityExpressions.GAME_OBJECT_OWNER_BY_ID_OR_ADMIN)
-    public ResponseEntity<Void> editGameObject(@PathVariable Long objectId, @Valid @RequestBody GameObjectUpdateDTO dto) {
+    public ResponseEntity<Void> editGameObject(@PathVariable Long objectId, @Valid @RequestBody GameObjectCreationDTO dto) {
         gameObjectService.updateGameObject(objectId, dto);
         return new ResponseEntity<>(HttpStatus.OK);
     }

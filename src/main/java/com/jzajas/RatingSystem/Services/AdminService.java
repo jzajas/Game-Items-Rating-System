@@ -1,6 +1,8 @@
 package com.jzajas.RatingSystem.Services;
 
-import com.jzajas.RatingSystem.DTO.UserRegistrationDTO;
+import com.jzajas.RatingSystem.DTO.Input.UserRegistrationDTO;
+import com.jzajas.RatingSystem.DTO.Output.PendingCommentDTO;
+import com.jzajas.RatingSystem.DTO.Output.PendingUserDTO;
 import com.jzajas.RatingSystem.Entities.Comment;
 import com.jzajas.RatingSystem.Entities.Status;
 import com.jzajas.RatingSystem.Entities.User;
@@ -15,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class AdminService {
@@ -43,16 +46,22 @@ public class AdminService {
         userRepository.save(user);
     }
 
-//    TODO two functions below could return DTO's instead of full entities
-
     @Transactional(readOnly = true)
-    public List<User> getAllPendingUsers() {
-        return userRepository.findAllUsersWithPendingStatus();
+    public List<PendingUserDTO> getAllPendingUsers() {
+        return userRepository
+                .findAllUsersWithPendingStatus()
+                .stream()
+                .map(mapper::convertToPendingUserDTO)
+                .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
-    public List<Comment> getAllPendingComments() {
-        return commentRepository.findAllCommentsWithPendingStatus();
+    public List<PendingCommentDTO> getAllPendingComments() {
+        return commentRepository
+                .findAllCommentsWithPendingStatus()
+                .stream()
+                .map(mapper::convertToPendingCommentDTO)
+                .collect(Collectors.toList());
     }
 
     @Transactional

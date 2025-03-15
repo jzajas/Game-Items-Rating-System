@@ -1,8 +1,7 @@
 package com.jzajas.RatingSystem.Controllers;
 
-import com.jzajas.RatingSystem.DTO.CommentDTO;
-import com.jzajas.RatingSystem.DTO.CommentRegistrationDTO;
-import com.jzajas.RatingSystem.DTO.CommentUpdateDTO;
+import com.jzajas.RatingSystem.DTO.Output.CommentDTO;
+import com.jzajas.RatingSystem.DTO.Input.CommentCreationDTO;
 import com.jzajas.RatingSystem.Security.CustomSecurityExpressions;
 import com.jzajas.RatingSystem.Services.CommentService;
 import jakarta.validation.Valid;
@@ -30,7 +29,7 @@ public class CommentController {
     @PostMapping("/{userId}/comments")
     public ResponseEntity<Void> addCommentForUser(
             @PathVariable Long userId,
-            @Valid @RequestBody CommentRegistrationDTO dto,
+            @Valid @RequestBody CommentCreationDTO dto,
             Authentication authentication
     ) {
         commentService.createNewComment(dto, userId, authentication);
@@ -59,7 +58,7 @@ public class CommentController {
     @PutMapping("/comments/{commentId}")
     public ResponseEntity<Void> updateComment(
             @PathVariable Long commentId,
-            @Valid @RequestBody CommentUpdateDTO dto,
+            @Valid @RequestBody CommentCreationDTO dto,
             Authentication authentication
     ) {
         String userEmail = authentication.getName();

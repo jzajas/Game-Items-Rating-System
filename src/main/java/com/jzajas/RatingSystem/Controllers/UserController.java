@@ -1,8 +1,8 @@
 package com.jzajas.RatingSystem.Controllers;
 
-import com.jzajas.RatingSystem.DTO.UserDTO;
-import com.jzajas.RatingSystem.DTO.UserRegistrationDTO;
-import com.jzajas.RatingSystem.DTO.UserScoreDTO;
+import com.jzajas.RatingSystem.DTO.Output.UserDTO;
+import com.jzajas.RatingSystem.DTO.Input.UserRegistrationDTO;
+import com.jzajas.RatingSystem.DTO.Output.UserScoreDTO;
 import com.jzajas.RatingSystem.Entities.GameCategory;
 import com.jzajas.RatingSystem.Services.UserService;
 import jakarta.validation.Valid;

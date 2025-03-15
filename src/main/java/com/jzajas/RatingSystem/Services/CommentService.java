@@ -1,8 +1,7 @@
 package com.jzajas.RatingSystem.Services;
 
-import com.jzajas.RatingSystem.DTO.CommentDTO;
-import com.jzajas.RatingSystem.DTO.CommentRegistrationDTO;
-import com.jzajas.RatingSystem.DTO.CommentUpdateDTO;
+import com.jzajas.RatingSystem.DTO.Output.CommentDTO;
+import com.jzajas.RatingSystem.DTO.Input.CommentCreationDTO;
 import com.jzajas.RatingSystem.Entities.Comment;
 import com.jzajas.RatingSystem.Entities.Role;
 import com.jzajas.RatingSystem.Entities.Status;
@@ -36,7 +35,7 @@ public class CommentService {
 
 //    TODO if the user is not found then there can be a prompt to log in/ set up account -> one of the scenarios
     @Transactional
-    public void createNewComment(CommentRegistrationDTO dto, Long receiverId, Authentication authentication) {
+    public void createNewComment(CommentCreationDTO dto, Long receiverId, Authentication authentication) {
         Optional<User> receiver = userRepository.findById(receiverId);
         if (receiver.isEmpty()) throw new UserNotFoundException(receiverId);
         if (receiver.get().getStatus() != Status.APPROVED ||
@@ -100,7 +99,7 @@ public class CommentService {
     }
 
     @Transactional
-    public void updateCommentById(Long commentId, CommentUpdateDTO dto, String email) {
+    public void updateCommentById(Long commentId, CommentCreationDTO dto, String email) {
         Comment oldComment = findCommentById(commentId);
         if (oldComment.getAuthorID() == null && !userRepository.isAdministrator(email)) {
             throw new BadRequestException("Cannot update anonymous comment");

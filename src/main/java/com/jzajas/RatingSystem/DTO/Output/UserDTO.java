@@ -1,4 +1,4 @@
-package com.jzajas.RatingSystem.DTO;
+package com.jzajas.RatingSystem.DTO.Output;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,11 +9,9 @@ import java.util.Date;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserScoreDTO {
+public class UserDTO {
 
     private String firstName;
     private String lastName;
     private Date createdAt;
-    private double score;
-    private int commentCount;
 }

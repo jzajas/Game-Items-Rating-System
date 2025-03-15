@@ -1,7 +1,6 @@
-package com.jzajas.RatingSystem.DTO;
+package com.jzajas.RatingSystem.DTO.Input;
 
 import com.jzajas.RatingSystem.Entities.GameCategory;
-import com.jzajas.RatingSystem.Entities.User;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotBlank;
@@ -13,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class GameObjectRegistrationDTO {
+public class GameObjectCreationDTO {
 
     @NotNull(message = "Title required")
     @NotBlank(message = "Title required")

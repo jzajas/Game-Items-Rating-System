@@ -1,6 +1,9 @@
 package com.jzajas.RatingSystem.Mappers;
 
-import com.jzajas.RatingSystem.DTO.*;
+import com.jzajas.RatingSystem.DTO.Input.CommentCreationDTO;
+import com.jzajas.RatingSystem.DTO.Input.GameObjectCreationDTO;
+import com.jzajas.RatingSystem.DTO.Input.UserRegistrationDTO;
+import com.jzajas.RatingSystem.DTO.Output.*;
 import com.jzajas.RatingSystem.Entities.*;
 import org.springframework.stereotype.Component;
 
@@ -16,6 +19,18 @@ public class DTOMapper {
         dto.setCreatedAt(user.getCreatedAt());
 
         return dto;
+    }
+
+    public PendingUserDTO convertToPendingUserDTO(User user) {
+        PendingUserDTO dto = new PendingUserDTO();
+
+        dto.setFirstName(user.getFirstName());
+        dto.setLastName(user.getLastName());
+        dto.setEmail(user.getEmail());
+        dto.setCreatedAt(user.getCreatedAt());
+        dto.setRole(user.getRole());
+
+        return  dto;
     }
 
     public User convertFromUserRegistrationDTOtoUser(UserRegistrationDTO dto) {
@@ -61,7 +76,31 @@ public class DTOMapper {
         return dto;
     }
 
-    public Comment convertFromCommentRegistrationDTONotAnonymous(CommentRegistrationDTO dto) {
+    public PendingCommentDTO convertToPendingCommentDTO(Comment comment) {
+        PendingCommentDTO dto = new PendingCommentDTO();
+
+        dto.setMessage(comment.getMessage());
+
+        if (comment.getAuthorID() != null) {
+            dto.setAuthorFirstName(comment.getAuthorID().getFirstName());
+            dto.setAuthorLastName(comment.getAuthorID().getLastName());
+            dto.setAuthorEmail(comment.getAuthorID().getEmail());
+        } else {
+            dto.setAuthorFirstName(null);
+            dto.setAuthorLastName(null);
+            dto.setAuthorEmail(null);
+        }
+
+        dto.setReceiverFirstName(comment.getReceiver().getFirstName());
+        dto.setReceiverLastName(comment.getReceiver().getLastName());
+        dto.setReceiverEmail(comment.getReceiver().getEmail());
+        dto.setCreatedAt(comment.getCreatedAt());
+        dto.setRating(comment.getRating());
+
+        return dto;
+    }
+
+    public Comment convertFromCommentRegistrationDTONotAnonymous(CommentCreationDTO dto) {
         Comment comment = new Comment();
 
         comment.setMessage(dto.getMessage());
@@ -82,7 +121,7 @@ public class DTOMapper {
         return dto;
     }
 
-    public GameObject convertFromGameObjectRegistrationDTO(GameObjectRegistrationDTO dto) {
+    public GameObject convertFromGameObjectRegistrationDTO(GameObjectCreationDTO dto) {
         GameObject newGameObject = new GameObject();
 
         newGameObject.setTitle(dto.getTitle());
