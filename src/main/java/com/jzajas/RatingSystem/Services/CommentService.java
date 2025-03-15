@@ -55,9 +55,12 @@ public class CommentService {
             if (author.isPresent() && author.get().getStatus() != Status.APPROVED) {
                 throw new AccountNotApprovedException("Account is not approved");
             }
+
             comment.setAuthorID(author.get());
+            comment.setStatus(Status.APPROVED);
         } else {
             comment.setAuthorID(null);
+            comment.setStatus(Status.PENDING);
         }
         if (!isRatingValid(dto.getRating())) throw new InvalidRatingValueException(dto.getRating());
 
@@ -116,7 +119,7 @@ public class CommentService {
     public void deleteCommentById(Long commentId, String email) {
         Comment comment = findCommentById(commentId);
         if (comment.getAuthorID() == null && !userRepository.isAdministrator(email)) {
-            throw new BadRequestException("Cannot update anonymous comment");
+            throw new BadRequestException("Cannot delete anonymous comment");
         }
         commentRepository.deleteById(commentId);
     }

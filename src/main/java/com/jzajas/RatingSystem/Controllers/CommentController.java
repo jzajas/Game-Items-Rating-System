@@ -37,6 +37,12 @@ public class CommentController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
+    @GetMapping("/comments/{commentId}")
+    public ResponseEntity<CommentDTO> getSpecificComment(@PathVariable Long commentId) {
+        CommentDTO comment = commentService.findCommentDTOById(commentId);
+        return ResponseEntity.ok(comment);
+    }
+
     @GetMapping("/{userId}/comments/posted")
     public ResponseEntity<List<CommentDTO>> getAllSellersPostedComments(@PathVariable Long userId) {
         List<CommentDTO> allPostedComments = commentService.findAllUserComments(userId, true);
@@ -49,16 +55,9 @@ public class CommentController {
         return ResponseEntity.ok(allReceivedComments);
     }
 
-    @GetMapping("/comments/{commentId}")
-    public ResponseEntity<CommentDTO> getSpecificComment(@PathVariable Long commentId) {
-        CommentDTO comment = commentService.findCommentDTOById(commentId);
-        return ResponseEntity.ok(comment);
-    }
-
     @PreAuthorize(CustomSecurityExpressions.COMMENT_HAS_OWNER_BY_ID_OR_ADMIN)
-    @PutMapping("/{userId}/comments/{commentId}")
+    @PutMapping("/comments/{commentId}")
     public ResponseEntity<Void> updateComment(
-            @PathVariable Long userId,
             @PathVariable Long commentId,
             @Valid @RequestBody CommentUpdateDTO dto,
             Authentication authentication
@@ -70,9 +69,8 @@ public class CommentController {
     }
 
     @PreAuthorize(CustomSecurityExpressions.COMMENT_HAS_OWNER_BY_ID_OR_ADMIN)
-    @DeleteMapping("/{userId}/comments/{commentId}")
+    @DeleteMapping("/comments/{commentId}")
     public ResponseEntity<Void> deleteComment(
-            @PathVariable Long userId,
             @PathVariable Long commentId,
             Authentication authentication
     ) {
