@@ -29,6 +29,8 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .findByEmail(email)
                 .orElseThrow(() -> new UserEmailNotFoundException(email));
 
+//        if (user.getStatus() != Status.APPROVED) throw new AccountNotApprovedException("Account with email: " + email);
+
         return new org.springframework.security.core.userdetails.User(
                 user.getEmail(),
                 user.getPassword(),

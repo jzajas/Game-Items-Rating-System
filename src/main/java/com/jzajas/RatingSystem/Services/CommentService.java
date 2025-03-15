@@ -4,16 +4,20 @@ import com.jzajas.RatingSystem.DTO.CommentDTO;
 import com.jzajas.RatingSystem.DTO.CommentRegistrationDTO;
 import com.jzajas.RatingSystem.DTO.CommentUpdateDTO;
 import com.jzajas.RatingSystem.Entities.Comment;
+import com.jzajas.RatingSystem.Entities.Role;
 import com.jzajas.RatingSystem.Entities.Status;
 import com.jzajas.RatingSystem.Entities.User;
 import com.jzajas.RatingSystem.Exceptions.*;
 import com.jzajas.RatingSystem.Mappers.DTOMapper;
 import com.jzajas.RatingSystem.Repositories.CommentRepository;
 import com.jzajas.RatingSystem.Repositories.UserRepository;
+import org.springframework.security.core.Authentication;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,22 +36,32 @@ public class CommentService {
 
 //    TODO if the user is not found then there can be a prompt to log in/ set up account -> one of the scenarios
     @Transactional
-    public void createNewComment(CommentRegistrationDTO dto, Long userId, boolean isAnonymous) {
-        if (!isRatingValid(dto.getRating())) throw new InvalidRatingValueException(dto.getRating());
-        if (userRepository.findById(userId).isEmpty()) throw new UserNotFoundException(userId);
-        if (dto.getAuthorID() != null && dto.getAuthorID().getStatus() != Status.APPROVED){
-            throw new AccountNotApprovedException("Account is not approved");
+    public void createNewComment(CommentRegistrationDTO dto, Long receiverId, Authentication authentication) {
+        Optional<User> receiver = userRepository.findById(receiverId);
+        if (receiver.isEmpty()) throw new UserNotFoundException(receiverId);
+        if (receiver.get().getStatus() != Status.APPROVED ||
+                receiver.get().getRole() != Role.SELLER
+        ) {
+            throw new InvalidReceiverException(receiverId);
         }
 
-        User user = userRepository.findById(userId).get();
-        Comment comment;
+        Comment comment = mapper.convertFromCommentRegistrationDTONotAnonymous(dto);
 
-        if (!isAnonymous) {
-            comment = mapper.convertFromCommentRegistrationDTONotAnonymous(dto);
+        if (authentication != null) {
+            if (Objects.equals(receiver.get().getEmail(), authentication.getName())) {
+                throw new InvalidReceiverException(receiverId);
+            }
+            Optional<User> author = userRepository.findByEmail(authentication.getName());
+            if (author.isPresent() && author.get().getStatus() != Status.APPROVED) {
+                throw new AccountNotApprovedException("Account is not approved");
+            }
+            comment.setAuthorID(author.get());
         } else {
-            comment = mapper.convertFromCommentRegistrationDTOAnonymous(dto);
+            comment.setAuthorID(null);
         }
-        comment.setReceiver(user);
+        if (!isRatingValid(dto.getRating())) throw new InvalidRatingValueException(dto.getRating());
+
+        comment.setReceiver(receiver.get());
         commentRepository.save(comment);
     }
 

@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+//TODO split into few exception handlers?
+
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionsHandler {
@@ -29,6 +31,15 @@ public class GlobalExceptionsHandler {
         return new ResponseEntity<>(
                 "Provided email: " + ex.getMessage() + " could not be found",
                 HttpStatus.NOT_FOUND
+        );
+    }
+
+    @ExceptionHandler(InvalidReceiverException.class)
+    public ResponseEntity<String> handleInvalidReceiverException(InvalidReceiverException ex) {
+        log.info("Caught InvalidReceiverException: ", ex);
+        return new ResponseEntity<>(
+                "Receiver with the id: " + ex.getMessage() + " is invalid",
+                HttpStatus.BAD_REQUEST
         );
     }
 

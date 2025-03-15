@@ -26,14 +26,14 @@ public class CommentController {
         this.commentService = commentService;
     }
 
-    @PreAuthorize("hasRole('SELLER') OR isAnonymous")
+    @PreAuthorize("hasRole('SELLER') OR hasRole('ADMINISTRATOR') OR isAnonymous()")
     @PostMapping("/{userId}/comments")
     public ResponseEntity<Void> addCommentForUser(
             @PathVariable Long userId,
             @Valid @RequestBody CommentRegistrationDTO dto,
             Authentication authentication
     ) {
-        commentService.createNewComment(dto, userId, authentication == null);
+        commentService.createNewComment(dto, userId, authentication);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 

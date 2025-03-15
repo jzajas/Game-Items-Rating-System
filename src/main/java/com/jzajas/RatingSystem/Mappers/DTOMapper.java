@@ -65,22 +65,8 @@ public class DTOMapper {
         Comment comment = new Comment();
 
         comment.setMessage(dto.getMessage());
-        comment.setReceiver(dto.getReceiverID());
-        comment.setAuthorID(dto.getAuthorID());
         comment.setRating(dto.getRating());
         comment.setStatus(Status.APPROVED);
-
-        return comment;
-    }
-
-    public Comment convertFromCommentRegistrationDTOAnonymous(CommentRegistrationDTO dto) {
-        Comment comment = new Comment();
-
-        comment.setMessage(dto.getMessage());
-        comment.setReceiver(dto.getReceiverID());
-        comment.setAuthorID(null);
-        comment.setRating(dto.getRating());
-        comment.setStatus(Status.PENDING);
 
         return comment;
     }

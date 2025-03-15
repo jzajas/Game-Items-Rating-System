@@ -43,6 +43,8 @@ public class AdminService {
         userRepository.save(user);
     }
 
+//    TODO two functions below could return DTO's instead of full entities
+
     @Transactional(readOnly = true)
     public List<User> getAllPendingUsers() {
         return userRepository.findAllUsersWithPendingStatus();
