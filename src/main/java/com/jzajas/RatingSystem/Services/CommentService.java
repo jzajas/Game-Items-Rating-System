@@ -51,7 +51,8 @@ public class CommentService {
                 throw new InvalidReceiverException(receiverId);
             }
             Optional<User> author = userRepository.findByEmail(authentication.getName());
-            if (author.isPresent() && author.get().getStatus() != Status.APPROVED) {
+            if (author.isEmpty()) throw new UserEmailNotFoundException(authentication.getName());
+            if (author.get().getStatus() != Status.APPROVED) {
                 throw new AccountNotApprovedException("Account is not approved");
             }
 
@@ -59,7 +60,7 @@ public class CommentService {
             comment.setStatus(Status.APPROVED);
         } else {
             comment.setAuthorID(null);
-            comment.setStatus(Status.PENDING);
+            comment.setStatus(Status.PENDING_ADMIN);
         }
         if (!isRatingValid(dto.getRating())) throw new InvalidRatingValueException(dto.getRating());
 

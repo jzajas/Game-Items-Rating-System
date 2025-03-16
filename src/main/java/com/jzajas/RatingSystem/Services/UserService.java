@@ -5,6 +5,7 @@ import com.jzajas.RatingSystem.DTO.Input.UserRegistrationDTO;
 import com.jzajas.RatingSystem.DTO.Output.UserScoreDTO;
 import com.jzajas.RatingSystem.Entities.*;
 import com.jzajas.RatingSystem.Exceptions.EmailAlreadyInUseException;
+import com.jzajas.RatingSystem.Exceptions.UserEmailNotFoundException;
 import com.jzajas.RatingSystem.Exceptions.UserNotFoundException;
 import com.jzajas.RatingSystem.Mappers.DTOMapper;
 import com.jzajas.RatingSystem.Repositories.CommentRepository;
@@ -21,13 +22,17 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final CommentRepository commentRepository;
+    private final EmailService emailService;
+    private final TokenService tokenService;
     private final PasswordEncoder encoder;
     private final DTOMapper mapper;
 
-    public UserService(CommentRepository commentRepository, UserRepository userRepository,
-                       PasswordEncoder encoder, DTOMapper mapper) {
+    public UserService(CommentRepository commentRepository, UserRepository userRepository, EmailService emailService,
+                       TokenService tokenService, PasswordEncoder encoder, DTOMapper mapper) {
         this.commentRepository = commentRepository;
         this.userRepository = userRepository;
+        this.emailService = emailService;
+        this.tokenService = tokenService;
         this.encoder = encoder;
         this.mapper = mapper;
     }
@@ -40,6 +45,8 @@ public class UserService {
         user.setPassword(encoder.encode(user.getPassword()));
 
         userRepository.save(user);
+        String token = tokenService.createAndSaveToken(user.getEmail());
+        emailService.sendVerificationEmail(user.getEmail(), token);
     }
 
     @Transactional(readOnly = true)
@@ -48,6 +55,13 @@ public class UserService {
                 .findUserWithApprovedStatus(id)
                 .orElseThrow(() -> new UserNotFoundException(id));
         return mapper.convertToUserDTO(user);
+    }
+
+    @Transactional(readOnly = true)
+    public User findUserByEmail(String email){
+        return userRepository
+                .findByEmail(email)
+                .orElseThrow(() -> new UserEmailNotFoundException(email));
     }
 
     @Transactional(readOnly = true)
@@ -83,6 +97,15 @@ public class UserService {
     @Transactional(readOnly = true)
     private boolean emailAlreadyExists(String email) {
         return userRepository.findByEmail(email).isPresent();
+    }
+
+    public void confirmUserEmail(String token) {
+        String email = tokenService.getEmailByToken(token);
+        User user = findUserByEmail(email);
+        user.setStatus(Status.PENDING_ADMIN);
+        userRepository.save(user);
+        tokenService.deleteToken(token);
+
     }
 }
 

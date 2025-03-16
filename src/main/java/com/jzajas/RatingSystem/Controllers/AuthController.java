@@ -1,16 +1,17 @@
 package com.jzajas.RatingSystem.Controllers;
 
+import com.jzajas.RatingSystem.Services.TokenService;
 import com.jzajas.RatingSystem.Services.UserService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
 
     private final UserService userService;
+
 
     public AuthController(UserService userService) {
         this.userService = userService;
@@ -29,5 +30,11 @@ public class AuthController {
     @GetMapping("/check_code")
     public void checkCode() {
 
+    }
+
+    @GetMapping("/confirm")
+    public ResponseEntity<Void> confirmEmail(@RequestParam(name = "token") String token) {
+        userService.confirmUserEmail(token);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

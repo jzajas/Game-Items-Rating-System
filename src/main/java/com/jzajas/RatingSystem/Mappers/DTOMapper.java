@@ -105,7 +105,6 @@ public class DTOMapper {
 
         comment.setMessage(dto.getMessage());
         comment.setRating(dto.getRating());
-        comment.setStatus(Status.PENDING);
 
         return comment;
     }

@@ -1,6 +1,7 @@
 package com.jzajas.RatingSystem.ExceptionsHandler;
 
 import com.jzajas.RatingSystem.Exceptions.*;
+import jakarta.mail.MessagingException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -113,6 +114,12 @@ public class GlobalExceptionsHandler {
     public ResponseEntity<String> handleAccountNotApprovedException(AccountNotApprovedException ex) {
         log.info("Caught AccountNotApprovedException: ", ex);
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(MessagingException.class)
+    public ResponseEntity<String> handleMessagingException(MessagingException ex) {
+        log.info("Caught MessagingException: ", ex);
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(Exception.class)

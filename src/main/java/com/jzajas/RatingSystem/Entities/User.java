@@ -88,6 +88,6 @@ public class User {
     public void initializeNewUser() {
         this.createdAt = new Date();
         if (this.role == null) this.role = Role.SELLER;
-        if (this.status == null) this.status = Status.PENDING;
+        if (this.status == null) this.status = Status.PENDING_EMAIL;
     }
 }
