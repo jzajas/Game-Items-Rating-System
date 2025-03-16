@@ -3,7 +3,6 @@ package com.jzajas.RatingSystem.Controllers;
 import com.jzajas.RatingSystem.DTO.Input.UserRegistrationDTO;
 import com.jzajas.RatingSystem.DTO.Output.PendingCommentDTO;
 import com.jzajas.RatingSystem.DTO.Output.PendingUserDTO;
-import com.jzajas.RatingSystem.Entities.Comment;
 import com.jzajas.RatingSystem.Services.AdminService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;

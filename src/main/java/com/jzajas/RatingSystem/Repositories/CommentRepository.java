@@ -10,12 +10,12 @@ import java.util.List;
 
 public interface CommentRepository extends JpaRepository<Comment, Long> {
 
-    @Query(value = "SELECT * FROM comments WHERE author_id = :userId AND status = 0", nativeQuery = true)
+    @Query(value = "SELECT * FROM comments WHERE author_id = :userId AND status = 'APPROVED'", nativeQuery = true)
     List<Comment> findAllPostedCommentsByUserId(@Param("userId") Long userId);
 
-    @Query(value = "SELECT * FROM comments WHERE receiver = :userId AND status = 0", nativeQuery = true)
+    @Query(value = "SELECT * FROM comments WHERE receiver = :userId AND status = 'APPROVED'", nativeQuery = true)
     List<Comment> findAllReceivedCommentsByUserId(@Param("userId") Long userId);
 
-    @Query(value = "SELECT * FROM comments WHERE status = 1", nativeQuery = true)
+    @Query(value = "SELECT * FROM comments WHERE status = 'PENDING_ADMIN'", nativeQuery = true)
     List<Comment> findAllCommentsWithPendingStatus();
 }

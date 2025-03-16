@@ -1,6 +1,6 @@
 package com.jzajas.RatingSystem.Configuration;
 
-import com.jzajas.RatingSystem.Security.CustomUserDetailsService;
+import com.jzajas.RatingSystem.Security.CustomAuthenticationEntryPoint;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -20,11 +20,10 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    private final CustomUserDetailsService userDetailsService;
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
-
-    public SecurityConfig(CustomUserDetailsService userDetailsService) {
-        this.userDetailsService = userDetailsService;
+    public SecurityConfig(CustomAuthenticationEntryPoint customAuthenticationEntryPoint) {
+        this.customAuthenticationEntryPoint = customAuthenticationEntryPoint;
     }
 
     @Bean
@@ -38,17 +37,19 @@ public class SecurityConfig {
         return http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-//                                .requestMatchers(HttpMethod.GET, "/**").permitAll()
-//                                .requestMatchers("/users/register").permitAll()
-//                                .anyRequest().authenticated()
-                                .anyRequest().permitAll()
+                                .requestMatchers("/users/**").permitAll()
+                                .requestMatchers(HttpMethod.GET).permitAll()
+//                                .requestMatchers("/users/*/comments").permitAll()
+                                .requestMatchers("/auth/confirm").permitAll()
+                                .anyRequest().authenticated()
                 )
-                .httpBasic(Customizer.withDefaults())
+                .httpBasic(exception -> exception
+                        .authenticationEntryPoint(customAuthenticationEntryPoint))
                 .build();
     }
 
     @Bean
-    public AuthenticationManager authenticationManager1(AuthenticationConfiguration authConfig) throws Exception {
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
         return authConfig.getAuthenticationManager();
     }
 }

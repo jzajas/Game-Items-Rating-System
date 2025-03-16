@@ -21,7 +21,7 @@ import java.util.Date;
                 "COUNT(c.id) as comment_count " +
                 "FROM users u " +
                 "LEFT JOIN comments c ON u.id = c.receiver " +
-                "WHERE u.status = 0 and u.role = 'SELLER' " +
+                "WHERE u.status = 'APPROVED' and u.role = 'SELLER' " +
                 "GROUP BY u.id " +
                 "ORDER BY avg_score DESC " +
                 "LIMIT :limit",
@@ -35,7 +35,7 @@ import java.util.Date;
                 "FROM users u " +
                 "INNER JOIN game_objects g ON u.id = g.author_id " +
                 "LEFT JOIN comments c ON u.id = c.receiver " +
-                "WHERE g.category = :category AND u.status = 0 and u.role = 'SELLER' " +
+                "WHERE g.category = :category AND u.status = 'APPROVED' and u.role = 'SELLER' " +
                 "GROUP BY u.id " +
                 "ORDER BY avg_score DESC " +
                 "LIMIT :limit",
@@ -80,6 +80,7 @@ public class User {
     @Column(name = "role", nullable = false)
     private Role role;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private Status status;
 

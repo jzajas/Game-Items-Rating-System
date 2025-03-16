@@ -10,6 +10,8 @@ import com.jzajas.RatingSystem.Exceptions.UserNotFoundException;
 import com.jzajas.RatingSystem.Mappers.DTOMapper;
 import com.jzajas.RatingSystem.Repositories.CommentRepository;
 import com.jzajas.RatingSystem.Repositories.UserRepository;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -77,6 +79,14 @@ public class UserService {
        } else {
            return userRepository.findTopSellersByRatingAndCategory(number, String.valueOf(category));
        }
+    }
+
+    @Transactional
+    public void deleteUser(Authentication authentication) {
+        if (authentication == null) throw new AccessDeniedException("No authentication provided");
+        String email = authentication.getName();
+        User user = userRepository.findByEmail(email).get();
+        userRepository.deleteById(user.getId());
     }
 
     @Transactional(readOnly = true)

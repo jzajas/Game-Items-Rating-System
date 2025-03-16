@@ -61,12 +61,12 @@ public class DTOMapper {
         CommentDTO dto = new CommentDTO();
 
         dto.setMessage(comment.getMessage());
-        if (comment.getAuthorID() == null) {
+        if (comment.getAuthor() == null) {
             dto.setAuthorFirstName(null);
             dto.setAuthorLastName(null);
         } else {
-            dto.setAuthorFirstName(comment.getAuthorID().getFirstName());
-            dto.setAuthorLastName(comment.getAuthorID().getLastName());
+            dto.setAuthorFirstName(comment.getAuthor().getFirstName());
+            dto.setAuthorLastName(comment.getAuthor().getLastName());
         }
         dto.setReceiverFirstName(comment.getReceiver().getFirstName());
         dto.setReceiverLastName(comment.getReceiver().getLastName());
@@ -81,10 +81,10 @@ public class DTOMapper {
 
         dto.setMessage(comment.getMessage());
 
-        if (comment.getAuthorID() != null) {
-            dto.setAuthorFirstName(comment.getAuthorID().getFirstName());
-            dto.setAuthorLastName(comment.getAuthorID().getLastName());
-            dto.setAuthorEmail(comment.getAuthorID().getEmail());
+        if (comment.getAuthor() != null) {
+            dto.setAuthorFirstName(comment.getAuthor().getFirstName());
+            dto.setAuthorLastName(comment.getAuthor().getLastName());
+            dto.setAuthorEmail(comment.getAuthor().getEmail());
         } else {
             dto.setAuthorFirstName(null);
             dto.setAuthorLastName(null);

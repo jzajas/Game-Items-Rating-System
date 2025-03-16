@@ -24,7 +24,7 @@ public class Comment {
 
     @ManyToOne
     @JoinColumn(name = "author_id", nullable = true)
-    private User authorID;
+    private User author;
 
     @ManyToOne
     @JoinColumn(name = "receiver", nullable = false)
@@ -41,6 +41,7 @@ public class Comment {
     @Column(name = "rating", nullable = false)
     private int rating;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private Status status;
 

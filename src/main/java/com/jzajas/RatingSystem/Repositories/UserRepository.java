@@ -18,10 +18,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
             nativeQuery = true)
     boolean isAdministrator(@Param("email") String email);
 
-    @Query("SELECT u FROM User u WHERE u.id = :id AND u.status = 0")
+    @Query("SELECT u FROM User u WHERE u.id = :id AND u.status = 'APPROVED' AND u.role = 'SELLER'")
     Optional<User> findUserWithApprovedStatus(@Param("id") Long id);
 
-    @Query(value = "SELECT * FROM users WHERE status = 1", nativeQuery = true)
+    @Query(value = "SELECT * FROM users WHERE status = 'PENDING_ADMIN'", nativeQuery = true)
     List<User> findAllUsersWithPendingStatus();
 
     @Query(name = "find_top_sellers", nativeQuery = true)
