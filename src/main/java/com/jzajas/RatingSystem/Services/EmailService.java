@@ -33,10 +33,26 @@ public class EmailService {
 
         try {
             MimeMessageHelper helper = new MimeMessageHelper(message, true);
-            helper.setTo(receiverEmail);
             helper.setFrom(sendingEmail);
+            helper.setTo(receiverEmail);
             helper.setSubject("Email Confirmation");
             helper.setText(HTML_CONTENT.replace("[[verification]]", verificationCode), true);
+        } catch (MessagingException me) {
+//            TODO messaging exception handling
+            me.printStackTrace();
+        }
+        mailSender.send(message);
+    }
+
+    public void sendResetEmail(String receiverEmail, String body) {
+        MimeMessage message = mailSender.createMimeMessage();
+
+        try {
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+            helper.setFrom(sendingEmail);
+            helper.setTo(receiverEmail);
+            helper.setSubject("Password Reset");
+            helper.setText(body, true);
         } catch (MessagingException me) {
 //            TODO messaging exception handling
             me.printStackTrace();
