@@ -9,11 +9,13 @@ import com.jzajas.RatingSystem.Exceptions.BadRequestException;
 import com.jzajas.RatingSystem.Exceptions.UserEmailNotFoundException;
 import com.jzajas.RatingSystem.Repositories.UserRepository;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
-import java.util.Random;
+import java.util.Objects;
+import java.util.UUID;
 
 @Service
 public class AuthService {
@@ -34,7 +36,10 @@ public class AuthService {
         this.encoder = encoder;
     }
 
-    public void sendResetCode(ForgotPasswordRequestDTO dto) {
+    public void sendResetCode(ForgotPasswordRequestDTO dto, Authentication authentication) {
+        if (authentication != null && !Objects.equals(authentication.getName(), dto.getEmail())) {
+            throw new BadRequestException("Logged in user email is different from the one in the request");
+        }
         String email = dto.getEmail();
         User user = userRepository
                 .findByEmail(email)
@@ -43,17 +48,13 @@ public class AuthService {
         String resetCode = generateResetCode();
         redisTemplate.opsForValue().set(resetCode, email, Duration.ofMinutes(EXPIRATION_TIME));
 
-        String body = "Your password reset code is: " + resetCode +
-                "\n\nThis code will expire in " + EXPIRATION_TIME + " minutes.";
-
-        emailService.sendResetEmail(email, body);
+        emailService.sendResetEmail(email, resetCode, EXPIRATION_TIME);
     }
 
     public void resetPassword(PasswordResetDTO dto) {
         String email = redisTemplate.opsForValue().get(dto.getCode());
 
-//        TODO new exception
-        if (!email.equals(dto.getEmail())) throw new BadRequestException("Wubudubu");
+        if (email == null) throw new BadRequestException("Code already expired or is incorrect");
         User user = userRepository
                 .findByEmail(email)
                 .orElseThrow(() -> new UserEmailNotFoundException(email));
@@ -63,9 +64,11 @@ public class AuthService {
         redisTemplate.delete(dto.getCode());
     }
 
-    public boolean checkCode(String code) {
+    public boolean checkCode(String code, Authentication authentication) {
+        if (!Objects.equals(authentication.getName(), redisTemplate.opsForValue().get(code))) {
+            throw new BadRequestException("Provided key does not exist or it does not belong to you");
+        }
         return redisTemplate.hasKey(code);
-//        return Boolean.TRUE.equals(redisTemplate.hasKey(code));
     }
 
     public void isAccountApproved(Status status) {
@@ -73,7 +76,6 @@ public class AuthService {
     }
 
     private String generateResetCode() {
-        Random random = new Random();
-        int code = 100000 + random.nextInt(900000);
-        return String.valueOf(code);    }
+        return UUID.randomUUID().toString();
+    }
 }

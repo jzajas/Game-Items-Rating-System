@@ -116,10 +116,16 @@ public class GlobalExceptionsHandler {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.FORBIDDEN);
     }
 
+    @ExceptionHandler(MessageSendingException.class)
+    public ResponseEntity<String> handleMessageSendingException(MessageSendingException ex) {
+        log.info("Caught MessageSendingException: ", ex);
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.SERVICE_UNAVAILABLE);
+    }
+
     @ExceptionHandler(MessagingException.class)
     public ResponseEntity<String> handleMessagingException(MessagingException ex) {
         log.info("Caught MessagingException: ", ex);
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.SERVICE_UNAVAILABLE);
     }
 
     @ExceptionHandler(Exception.class)

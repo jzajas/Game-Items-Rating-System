@@ -43,6 +43,8 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
             response.getWriter().write("Account is not approved. Please check your email");
         } else if (user.get().getStatus() == Status.DECLINED) {
             response.getWriter().write("Account is declined.");
+        } else {
+            response.getWriter().write("Authentication error");
         }
     }
 

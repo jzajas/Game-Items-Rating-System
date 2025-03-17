@@ -1,5 +1,6 @@
 package com.jzajas.RatingSystem.Services;
 
+import com.jzajas.RatingSystem.Exceptions.MessageSendingException;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,34 +30,42 @@ public class EmailService {
     }
 
     public void sendVerificationEmail(String receiverEmail, String verificationCode) {
-        MimeMessage message = mailSender.createMimeMessage();
-
         try {
-            MimeMessageHelper helper = new MimeMessageHelper(message, true);
-            helper.setFrom(sendingEmail);
-            helper.setTo(receiverEmail);
-            helper.setSubject("Email Confirmation");
-            helper.setText(HTML_CONTENT.replace("[[verification]]", verificationCode), true);
+            MimeMessage message = createMimeMessage(
+                    receiverEmail,
+                    "Email Confirmation",
+                    HTML_CONTENT.replace("[[verification]]", verificationCode)
+            );
+            mailSender.send(message);
         } catch (MessagingException me) {
-//            TODO messaging exception handling
-            me.printStackTrace();
+            throw new MessageSendingException("Error occurred while sending verification email to: " + receiverEmail);
         }
-        mailSender.send(message);
     }
 
-    public void sendResetEmail(String receiverEmail, String body) {
-        MimeMessage message = mailSender.createMimeMessage();
-
+    public void sendResetEmail(String receiverEmail, String code, Long expirationTime) {
+        String body = "Your password reset code is: " + code +
+                "\n\nThis code will expire in " + expirationTime + " minutes." +
+                "\n If this action was not initiated by you";
         try {
-            MimeMessageHelper helper = new MimeMessageHelper(message, true);
-            helper.setFrom(sendingEmail);
-            helper.setTo(receiverEmail);
-            helper.setSubject("Password Reset");
-            helper.setText(body, true);
+            MimeMessage message = createMimeMessage(
+                    receiverEmail,
+                    "Password Reset",
+                    body
+            );
+            mailSender.send(message);
         } catch (MessagingException me) {
-//            TODO messaging exception handling
-            me.printStackTrace();
+            throw new MessageSendingException("Error occurred while sending reset email to: " + receiverEmail);
         }
-        mailSender.send(message);
+    }
+
+    private MimeMessage createMimeMessage(String receiverEmail, String subject, String body) throws MessagingException {
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true);
+        helper.setFrom(sendingEmail);
+        helper.setTo(receiverEmail);
+        helper.setSubject(subject);
+        helper.setText(body, true);
+
+        return message;
     }
 }

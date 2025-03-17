@@ -4,17 +4,12 @@ import com.jzajas.RatingSystem.Security.CustomAuthenticationEntryPoint;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
-
-// TODO add RequestCache to respond to the unauthorized request after authorization
 
 @Configuration
 @EnableMethodSecurity
@@ -38,18 +33,13 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                                 .requestMatchers("/users/register").permitAll()
+                                .requestMatchers("/auth/check_code").authenticated()
+                                .requestMatchers("/auth/*").permitAll()
                                 .requestMatchers(HttpMethod.GET).permitAll()
-//                                .requestMatchers("/users/*/comments").permitAll()
-                                .requestMatchers("/auth/confirm").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .httpBasic(exception -> exception
                         .authenticationEntryPoint(customAuthenticationEntryPoint))
                 .build();
-    }
-
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
-        return authConfig.getAuthenticationManager();
     }
 }
