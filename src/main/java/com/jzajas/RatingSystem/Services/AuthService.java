@@ -20,7 +20,8 @@ import java.util.UUID;
 @Service
 public class AuthService {
 
-    private static final long EXPIRATION_TIME = 10;
+    private static final long RESET_PASSWORD_CODE_EXPIRATION_TIME = 10;
+    private static final long ACCOUNT_CONFIRMATION_CODE_EXPIRATION_TIME = 60 * 24;
 
     private final UserRepository userRepository;
     private final StringRedisTemplate redisTemplate;
@@ -36,6 +37,12 @@ public class AuthService {
         this.encoder = encoder;
     }
 
+    public String createAndSaveCreationToken(String email) {
+        String code = generateCode();
+        redisTemplate.opsForValue().set(code, email, Duration.ofMinutes(ACCOUNT_CONFIRMATION_CODE_EXPIRATION_TIME));
+        return code;
+    }
+
     public void sendResetCode(ForgotPasswordRequestDTO dto, Authentication authentication) {
         if (authentication != null && !Objects.equals(authentication.getName(), dto.getEmail())) {
             throw new BadRequestException("Logged in user email is different from the one in the request");
@@ -45,10 +52,9 @@ public class AuthService {
                 .findByEmail(email)
                 .orElseThrow(() -> new UserEmailNotFoundException(email));
 
-        String resetCode = generateResetCode();
-        redisTemplate.opsForValue().set(resetCode, email, Duration.ofMinutes(EXPIRATION_TIME));
-
-        emailService.sendResetEmail(email, resetCode, EXPIRATION_TIME);
+        String resetCode = generateCode();
+        redisTemplate.opsForValue().set(resetCode, email, Duration.ofMinutes(RESET_PASSWORD_CODE_EXPIRATION_TIME));
+        emailService.sendResetEmail(email, resetCode, RESET_PASSWORD_CODE_EXPIRATION_TIME);
     }
 
     public void resetPassword(PasswordResetDTO dto) {
@@ -71,11 +77,19 @@ public class AuthService {
         return redisTemplate.hasKey(code);
     }
 
+    public void confirmUserEmail(String token) {
+        String email = redisTemplate.opsForValue().get(token);
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new UserEmailNotFoundException(email));
+        user.setStatus(Status.PENDING_ADMIN);
+        userRepository.save(user);
+        redisTemplate.delete(email);
+    }
+
     public void isAccountApproved(Status status) {
           if (status == Status.PENDING_EMAIL|| status == Status.DECLINED) throw new AccountNotApprovedException();
     }
 
-    private String generateResetCode() {
+    private String generateCode() {
         return UUID.randomUUID().toString();
     }
 }

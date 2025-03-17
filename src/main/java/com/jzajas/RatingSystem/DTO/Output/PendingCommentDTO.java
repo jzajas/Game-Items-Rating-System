@@ -11,6 +11,7 @@ import java.util.Date;
 @AllArgsConstructor
 public class PendingCommentDTO {
 
+    private long id;
     private String message;
     private String authorFirstName;
     private String authorLastName;

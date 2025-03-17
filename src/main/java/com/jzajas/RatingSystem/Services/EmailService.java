@@ -19,6 +19,10 @@ public class EmailService {
             "<p>Note: After confirming your email, an administrator will review and approve your account and only after" +
             " that you will be able to use your account.</p>";
 
+    private static final String RESET_EMAIL_BODY = "Your password reset code is: [[code]]" +
+            "\n\nThis code will expire in [[expirationTime]] minutes." +
+            "\n If this action was not initiated by you";
+
     private final JavaMailSender mailSender;
 
     @Value("${sending.email}")
@@ -50,7 +54,9 @@ public class EmailService {
             MimeMessage message = createMimeMessage(
                     receiverEmail,
                     "Password Reset",
-                    body
+                    RESET_EMAIL_BODY
+                            .replace("[[code]]", code)
+                            .replace("[[expirationTime]]", expirationTime.toString())
             );
             mailSender.send(message);
         } catch (MessagingException me) {

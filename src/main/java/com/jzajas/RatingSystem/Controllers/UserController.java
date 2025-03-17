@@ -45,9 +45,11 @@ public class UserController {
     @GetMapping("/score")
     public ResponseEntity<List<UserScoreDTO>> getTopSellersForCategory(
             @RequestParam(defaultValue = "10") int display,
-            @RequestParam(required = false) GameCategory category
+            @RequestParam(required = false) GameCategory category,
+            @RequestParam(defaultValue = "0") double from,
+            @RequestParam(defaultValue = "10") double to
     ) {
-        List<UserScoreDTO> topSellers = userService.getTopSellers(display, category);
+        List<UserScoreDTO> topSellers = userService.getTopSellers(display, category, from, to);
         return ResponseEntity.ok(topSellers);
     }
 

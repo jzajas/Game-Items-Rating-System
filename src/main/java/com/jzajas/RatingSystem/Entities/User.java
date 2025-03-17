@@ -23,6 +23,7 @@ import java.util.Date;
                 "LEFT JOIN comments c ON u.id = c.receiver " +
                 "WHERE u.status = 'APPROVED' and u.role = 'SELLER' " +
                 "GROUP BY u.id " +
+                "HAVING AVG(c.rating) >= :from and AVG(c.rating) <= :to " +
                 "ORDER BY avg_score DESC " +
                 "LIMIT :limit",
         resultSetMapping = "user_score_dto"
@@ -37,6 +38,7 @@ import java.util.Date;
                 "LEFT JOIN comments c ON u.id = c.receiver " +
                 "WHERE g.category = :category AND u.status = 'APPROVED' and u.role = 'SELLER' " +
                 "GROUP BY u.id " +
+                "HAVING AVG(c.rating) >= :from and AVG(c.rating) <= :to " +
                 "ORDER BY avg_score DESC " +
                 "LIMIT :limit",
         resultSetMapping = "user_score_dto"

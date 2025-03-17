@@ -2,6 +2,7 @@ package com.jzajas.RatingSystem.Repositories;
 
 import com.jzajas.RatingSystem.Entities.Comment;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -18,4 +19,8 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 
     @Query(value = "SELECT * FROM comments WHERE status = 'PENDING_ADMIN'", nativeQuery = true)
     List<Comment> findAllCommentsWithPendingStatus();
+
+    @Modifying
+    @Query(value = "DELETE FROM comments c WHERE c.author_id = :id OR c.receiver = :id", nativeQuery = true)
+    void deleteAllUserComments(@Param("id") Long id);
 }

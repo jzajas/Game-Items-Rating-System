@@ -37,14 +37,14 @@ public class AuthController {
     }
 
     @GetMapping("/check_code")
-    public ResponseEntity<Boolean> checkCode(@RequestParam String code, Authentication authentication) {
+    public ResponseEntity<Boolean> checkCode(@RequestParam(name = "code") String code, Authentication authentication) {
         boolean valid = authService.checkCode(code, authentication);
         return ResponseEntity.ok(valid);
     }
 
     @GetMapping("/confirm")
     public ResponseEntity<Void> confirmEmail(@RequestParam(name = "token") String token) {
-        userService.confirmUserEmail(token);
+        authService.confirmUserEmail(token);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

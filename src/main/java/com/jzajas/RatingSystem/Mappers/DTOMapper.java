@@ -24,6 +24,7 @@ public class DTOMapper {
     public PendingUserDTO convertToPendingUserDTO(User user) {
         PendingUserDTO dto = new PendingUserDTO();
 
+        dto.setId(user.getId());
         dto.setFirstName(user.getFirstName());
         dto.setLastName(user.getLastName());
         dto.setEmail(user.getEmail());
@@ -91,6 +92,7 @@ public class DTOMapper {
             dto.setAuthorEmail(null);
         }
 
+        dto.setId(comment.getId());
         dto.setReceiverFirstName(comment.getReceiver().getFirstName());
         dto.setReceiverLastName(comment.getReceiver().getLastName());
         dto.setReceiverEmail(comment.getReceiver().getEmail());

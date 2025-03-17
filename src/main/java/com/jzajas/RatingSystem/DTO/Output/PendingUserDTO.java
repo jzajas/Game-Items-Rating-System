@@ -12,6 +12,7 @@ import java.util.Date;
 @AllArgsConstructor
 public class PendingUserDTO {
 
+    private long id;
     private String firstName;
     private String lastName;
     private String email;

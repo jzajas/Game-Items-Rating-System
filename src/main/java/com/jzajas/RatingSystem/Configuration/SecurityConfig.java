@@ -32,11 +32,12 @@ public class SecurityConfig {
         return http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                                .requestMatchers("/users/register").permitAll()
-                                .requestMatchers("/auth/check_code").authenticated()
-                                .requestMatchers("/auth/*").permitAll()
-                                .requestMatchers(HttpMethod.GET).permitAll()
-                                .anyRequest().authenticated()
+                        .requestMatchers("/users/register").permitAll()
+                        .requestMatchers("/auth/check_code").authenticated()
+                        .requestMatchers("/auth/*").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/users/*/comments").permitAll()
+                        .requestMatchers(HttpMethod.GET).permitAll()
+                        .anyRequest().authenticated()
                 )
                 .httpBasic(exception -> exception
                         .authenticationEntryPoint(customAuthenticationEntryPoint))

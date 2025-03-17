@@ -9,6 +9,7 @@ import com.jzajas.RatingSystem.Exceptions.UserEmailNotFoundException;
 import com.jzajas.RatingSystem.Exceptions.UserNotFoundException;
 import com.jzajas.RatingSystem.Mappers.DTOMapper;
 import com.jzajas.RatingSystem.Repositories.CommentRepository;
+import com.jzajas.RatingSystem.Repositories.GameObjectRepository;
 import com.jzajas.RatingSystem.Repositories.UserRepository;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
@@ -25,16 +26,21 @@ public class UserService {
     private final UserRepository userRepository;
     private final CommentRepository commentRepository;
     private final EmailService emailService;
-    private final TokenService tokenService;
     private final PasswordEncoder encoder;
     private final DTOMapper mapper;
+    private final AuthService authService;
+    private final GameObjectRepository gameObjectRepository;
 
-    public UserService(CommentRepository commentRepository, UserRepository userRepository, EmailService emailService,
-                       TokenService tokenService, PasswordEncoder encoder, DTOMapper mapper) {
-        this.commentRepository = commentRepository;
-        this.userRepository = userRepository;
+
+    public UserService(AuthService authService, UserRepository userRepository, CommentRepository commentRepository,
+                       EmailService emailService, PasswordEncoder encoder, DTOMapper mapper, GameObjectRepository
+                               gameObjectRepository
+    ) {
+        this.authService = authService;
         this.emailService = emailService;
-        this.tokenService = tokenService;
+        this.userRepository = userRepository;
+        this.commentRepository = commentRepository;
+        this.gameObjectRepository = gameObjectRepository;
         this.encoder = encoder;
         this.mapper = mapper;
     }
@@ -47,7 +53,7 @@ public class UserService {
         user.setPassword(encoder.encode(user.getPassword()));
 
         userRepository.save(user);
-        String token = tokenService.createAndSaveToken(user.getEmail());
+        String token = authService.createAndSaveCreationToken(user.getEmail());
         emailService.sendVerificationEmail(user.getEmail(), token);
     }
 
@@ -73,11 +79,11 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public List<UserScoreDTO> getTopSellers(int number, GameCategory category) {
+    public List<UserScoreDTO> getTopSellers(int display, GameCategory category, double from, double to) {
        if (category == null) {
-            return userRepository.findTopSellersByRating(number);
+            return userRepository.findTopSellersByRating(display, from, to);
        } else {
-           return userRepository.findTopSellersByRatingAndCategory(number, String.valueOf(category));
+           return userRepository.findTopSellersByRatingAndCategory(display, from, to, String.valueOf(category));
        }
     }
 
@@ -86,6 +92,8 @@ public class UserService {
         if (authentication == null) throw new AccessDeniedException("No authentication provided");
         String email = authentication.getName();
         User user = userRepository.findByEmail(email).get();
+        commentRepository.deleteAllUserComments(user.getId());
+        gameObjectRepository.deleteAllUserGameObjects(user.getId());
         userRepository.deleteById(user.getId());
     }
 
@@ -107,15 +115,6 @@ public class UserService {
     @Transactional(readOnly = true)
     private boolean emailAlreadyExists(String email) {
         return userRepository.findByEmail(email).isPresent();
-    }
-
-    public void confirmUserEmail(String token) {
-        String email = tokenService.getEmailByToken(token);
-        User user = findUserByEmail(email);
-        user.setStatus(Status.PENDING_ADMIN);
-        userRepository.save(user);
-        tokenService.deleteToken(token);
-
     }
 }
 
