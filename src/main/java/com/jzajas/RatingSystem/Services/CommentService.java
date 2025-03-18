@@ -42,14 +42,14 @@ public class CommentService {
     public void createNewComment(CommentCreationDTO dto, Long receiverId, Authentication authentication) {
         if (!isRatingValid(dto.getRating())) throw new InvalidRatingValueException(dto.getRating());
         Optional<User> receiver = userRepository.findById(receiverId);
-        if (receiver.isEmpty()) throw new UserNotFoundException(receiverId);
-        if (receiver.get().getStatus() != Status.APPROVED ||
-                receiver.get().getRole() != Role.SELLER
-        ) {
+        if (receiver.isEmpty() ||
+                receiver.get().getStatus() != Status.APPROVED ||
+                receiver.get().getRole() != Role.SELLER)
+        {
             throw new InvalidReceiverException(receiverId);
         }
 
-        Comment comment = mapper.convertFromCommentRegistrationDTONotAnonymous(dto);
+        Comment comment = mapper.convertFromCommentCreationDTONotAnonymous(dto);
 
         if (authentication != null) {
             String authorEmail = authentication.getName();

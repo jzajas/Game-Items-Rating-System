@@ -114,7 +114,7 @@ public class DTOMapper {
         return dto;
     }
 
-    public Comment convertFromCommentRegistrationDTONotAnonymous(CommentCreationDTO dto) {
+    public Comment convertFromCommentCreationDTONotAnonymous(CommentCreationDTO dto) {
         Comment comment = new Comment();
 
         comment.setMessage(dto.getMessage());
