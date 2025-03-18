@@ -1,16 +1,16 @@
 package com.jzajas.RatingSystem.Services;
 
+import com.jzajas.RatingSystem.DTO.Input.UserAndCommentCreationDTO;
 import com.jzajas.RatingSystem.DTO.Output.CommentDTO;
 import com.jzajas.RatingSystem.DTO.Input.CommentCreationDTO;
-import com.jzajas.RatingSystem.Entities.Comment;
-import com.jzajas.RatingSystem.Entities.Role;
-import com.jzajas.RatingSystem.Entities.Status;
-import com.jzajas.RatingSystem.Entities.User;
+import com.jzajas.RatingSystem.Entities.*;
 import com.jzajas.RatingSystem.Exceptions.*;
 import com.jzajas.RatingSystem.Mappers.DTOMapper;
+import com.jzajas.RatingSystem.Repositories.AnonymousUserDetailsRepository;
 import com.jzajas.RatingSystem.Repositories.CommentRepository;
 import com.jzajas.RatingSystem.Repositories.UserRepository;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -23,19 +23,24 @@ import java.util.stream.Collectors;
 public class CommentService {
 
     private final CommentRepository commentRepository;
-    private final DTOMapper mapper;
     private final UserRepository userRepository;
+    private final AnonymousUserDetailsRepository anonymousUserDetailsRepository;
+    private final DTOMapper mapper;
+    private final BCryptPasswordEncoder encoder;
 
 
-    public CommentService(CommentRepository commentRepository, DTOMapper mapper, UserRepository repo) {
+    public CommentService(AnonymousUserDetailsRepository anonymousUserDetailsRepository,
+                          CommentRepository commentRepository, UserRepository userRepository, DTOMapper mapper, BCryptPasswordEncoder encoder) {
+        this.anonymousUserDetailsRepository = anonymousUserDetailsRepository;
         this.commentRepository = commentRepository;
+        this.userRepository = userRepository;
         this.mapper = mapper;
-        this.userRepository = repo;
+        this.encoder = encoder;
     }
 
-//    TODO if the user is not found then there can be a prompt to log in/ set up account -> one of the scenarios
     @Transactional
     public void createNewComment(CommentCreationDTO dto, Long receiverId, Authentication authentication) {
+        if (!isRatingValid(dto.getRating())) throw new InvalidRatingValueException(dto.getRating());
         Optional<User> receiver = userRepository.findById(receiverId);
         if (receiver.isEmpty()) throw new UserNotFoundException(receiverId);
         if (receiver.get().getStatus() != Status.APPROVED ||
@@ -56,16 +61,43 @@ public class CommentService {
             if (author.get().getStatus() != Status.APPROVED) {
                 throw new AccountNotApprovedException("Account is not approved");
             }
-
             comment.setAuthor(author.get());
             comment.setStatus(Status.APPROVED);
+            comment.setAnonymousUserDetails(null);
+
         } else {
+            if (dto.getFirstName() == null || dto.getLastName() == null) {
+                throw new BadRequestException("Anonymous User needs to provide first and last name");
+            }
+            AnonymousUserDetails saved = anonymousUserDetailsRepository.save(
+                    mapper.convertFromCommentCreationDTOtoAnonymousUser(dto)
+            );
             comment.setAuthor(null);
+            comment.setAnonymousUserDetails(saved);
             comment.setStatus(Status.PENDING_ADMIN);
         }
-        if (!isRatingValid(dto.getRating())) throw new InvalidRatingValueException(dto.getRating());
-
         comment.setReceiver(receiver.get());
+        commentRepository.save(comment);
+    }
+
+    @Transactional
+    public void createNewCommentWithUser(UserAndCommentCreationDTO dto) {
+        if (!isRatingValid(dto.getRating())) throw new InvalidRatingValueException(dto.getRating());
+        if (userRepository.findByEmail(dto.getEmail()).isPresent()) throw new EmailAlreadyInUseException(dto.getEmail());
+
+        User user = mapper.convertFromUserAndCommentCreationDTOtoUser(dto);
+        user.setPassword(encoder.encode(dto.getPassword()));
+        User savedUser = userRepository.save(user);
+
+        Comment comment = mapper.convertFromUserAndCommentCreationDTOtoComment(dto);
+        comment.setReceiver(savedUser);
+
+        AnonymousUserDetails anonymousUser = new AnonymousUserDetails();
+        anonymousUser.setFirstName(dto.getFirstName());
+        anonymousUser.setLastName(dto.getLastName());
+        AnonymousUserDetails savedAnonymousUser = anonymousUserDetailsRepository.save(anonymousUser);
+
+        comment.setAnonymousUserDetails(savedAnonymousUser);
         commentRepository.save(comment);
     }
 

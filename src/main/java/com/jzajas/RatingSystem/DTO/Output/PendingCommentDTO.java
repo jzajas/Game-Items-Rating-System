@@ -15,7 +15,6 @@ public class PendingCommentDTO {
     private String message;
     private String authorFirstName;
     private String authorLastName;
-    private String authorEmail;
     private String receiverFirstName;
     private String receiverLastName;
     private String receiverEmail;

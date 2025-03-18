@@ -1,5 +1,6 @@
 package com.jzajas.RatingSystem.DTO.Input;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -9,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CommentCreationDTO {
+public class UserAndCommentCreationDTO {
 
     @NotNull(message = "Message required")
     @NotBlank(message = "Message required")
@@ -18,6 +19,20 @@ public class CommentCreationDTO {
     @NotNull(message = "Rating required")
     private int rating;
 
+    @NotNull(message = "First Name required")
+    @NotBlank(message = "First Name required")
     private String firstName;
+
+    @NotNull(message = "Last Name required")
+    @NotBlank(message = "Last Name required")
     private String lastName;
+
+    @NotNull(message = "Password required")
+    @NotBlank(message = "Password required")
+    private String password;
+
+    @Email
+    @NotNull(message = "Email required")
+    @NotBlank(message = "Email required")
+    private String email;
 }

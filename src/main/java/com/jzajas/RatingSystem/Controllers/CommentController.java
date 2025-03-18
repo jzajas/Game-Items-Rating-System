@@ -1,5 +1,6 @@
 package com.jzajas.RatingSystem.Controllers;
 
+import com.jzajas.RatingSystem.DTO.Input.UserAndCommentCreationDTO;
 import com.jzajas.RatingSystem.DTO.Output.CommentDTO;
 import com.jzajas.RatingSystem.DTO.Input.CommentCreationDTO;
 import com.jzajas.RatingSystem.Security.CustomSecurityExpressions;
@@ -33,6 +34,14 @@ public class CommentController {
             Authentication authentication
     ) {
         commentService.createNewComment(dto, userId, authentication);
+        return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
+//    TODO useless @PreAuthorize ?
+    @PreAuthorize("isAnonymous()")
+    @PostMapping("/comments/create")
+    public ResponseEntity<Void> createCommentWithUser(@Valid @RequestBody UserAndCommentCreationDTO dto) {
+        commentService.createNewCommentWithUser(dto);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 

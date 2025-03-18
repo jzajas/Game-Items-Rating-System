@@ -2,10 +2,12 @@ package com.jzajas.RatingSystem.Mappers;
 
 import com.jzajas.RatingSystem.DTO.Input.CommentCreationDTO;
 import com.jzajas.RatingSystem.DTO.Input.GameObjectCreationDTO;
+import com.jzajas.RatingSystem.DTO.Input.UserAndCommentCreationDTO;
 import com.jzajas.RatingSystem.DTO.Input.UserRegistrationDTO;
 import com.jzajas.RatingSystem.DTO.Output.*;
 import com.jzajas.RatingSystem.Entities.*;
 import org.springframework.stereotype.Component;
+
 
 @Component
 public class DTOMapper {
@@ -58,13 +60,25 @@ public class DTOMapper {
         return user;
     }
 
+    public User convertFromUserAndCommentCreationDTOtoUser(UserAndCommentCreationDTO dto) {
+        User user = new User();
+
+        user.setFirstName(dto.getFirstName());
+        user.setLastName(dto.getLastName());
+        user.setEmail(dto.getEmail());
+        user.setRole(Role.SELLER);
+        user.setStatus(Status.PENDING_ADMIN);
+
+        return user;
+    }
+
     public CommentDTO convertToCommentDTO(Comment comment) {
         CommentDTO dto = new CommentDTO();
 
         dto.setMessage(comment.getMessage());
         if (comment.getAuthor() == null) {
-            dto.setAuthorFirstName(null);
-            dto.setAuthorLastName(null);
+            dto.setAuthorFirstName("Anonymous");
+            dto.setAuthorLastName("User");
         } else {
             dto.setAuthorFirstName(comment.getAuthor().getFirstName());
             dto.setAuthorLastName(comment.getAuthor().getLastName());
@@ -80,18 +94,16 @@ public class DTOMapper {
     public PendingCommentDTO convertToPendingCommentDTO(Comment comment) {
         PendingCommentDTO dto = new PendingCommentDTO();
 
-        dto.setMessage(comment.getMessage());
 
         if (comment.getAuthor() != null) {
             dto.setAuthorFirstName(comment.getAuthor().getFirstName());
             dto.setAuthorLastName(comment.getAuthor().getLastName());
-            dto.setAuthorEmail(comment.getAuthor().getEmail());
         } else {
-            dto.setAuthorFirstName(null);
-            dto.setAuthorLastName(null);
-            dto.setAuthorEmail(null);
+        dto.setAuthorFirstName(comment.getAnonymousUserDetails().getFirstName());
+        dto.setAuthorLastName(comment.getAnonymousUserDetails().getLastName());
         }
 
+        dto.setMessage(comment.getMessage());
         dto.setId(comment.getId());
         dto.setReceiverFirstName(comment.getReceiver().getFirstName());
         dto.setReceiverLastName(comment.getReceiver().getLastName());
@@ -109,6 +121,26 @@ public class DTOMapper {
         comment.setRating(dto.getRating());
 
         return comment;
+    }
+
+    public Comment convertFromUserAndCommentCreationDTOtoComment(UserAndCommentCreationDTO dto) {
+        Comment comment = new Comment();
+
+        comment.setMessage(dto.getMessage());
+        comment.setRating(dto.getRating());
+        comment.setStatus(Status.PENDING_ADMIN);
+        comment.setAuthor(null);
+
+        return comment;
+    }
+
+    public AnonymousUserDetails convertFromCommentCreationDTOtoAnonymousUser(CommentCreationDTO dto) {
+        AnonymousUserDetails anonymousUser = new AnonymousUserDetails();
+
+        anonymousUser.setFirstName(dto.getFirstName());
+        anonymousUser.setLastName(dto.getLastName());
+
+        return anonymousUser;
     }
 
     public GameObjectDTO convertToGameObjectDTO(GameObject gameObject) {

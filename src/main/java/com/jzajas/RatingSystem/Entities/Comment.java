@@ -30,13 +30,9 @@ public class Comment {
     @JoinColumn(name = "receiver", nullable = false)
     private User receiver;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "created_at", nullable = false)
-    private Date createdAt;
-
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "updated_at", nullable = false)
-    private Date updatedAt;
+    @ManyToOne
+    @JoinColumn(name = "anonymous_user_id", nullable = true)
+    private AnonymousUserDetails anonymousUserDetails;
 
     @Column(name = "rating", nullable = false)
     private int rating;
@@ -44,6 +40,14 @@ public class Comment {
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private Status status;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "created_at", nullable = false)
+    private Date createdAt;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "updated_at", nullable = false)
+    private Date updatedAt;
 
 
     @PrePersist
