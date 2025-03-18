@@ -9,7 +9,6 @@ import com.jzajas.RatingSystem.Exceptions.BadRequestException;
 import com.jzajas.RatingSystem.Exceptions.InvalidRatingValueException;
 import com.jzajas.RatingSystem.Exceptions.InvalidReceiverException;
 import com.jzajas.RatingSystem.Mappers.DTOMapper;
-import com.jzajas.RatingSystem.Repositories.AnonymousUserDetailsRepository;
 import com.jzajas.RatingSystem.Repositories.CommentRepository;
 import com.jzajas.RatingSystem.Repositories.UserRepository;
 import org.junit.jupiter.api.Test;
@@ -19,7 +18,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.Optional;
 
@@ -39,13 +37,7 @@ public class CommentServiceTest {
     private UserRepository userRepository;
 
     @Mock
-    private AnonymousUserDetailsRepository anonymousUserDetailsRepository;
-
-    @Mock
     private DTOMapper mapper;
-
-    @Mock
-    private BCryptPasswordEncoder encoder;
 
     @Mock
     private Authentication mockAuthentication;
