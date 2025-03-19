@@ -1,11 +1,9 @@
 package com.jzajas.RatingSystem.Security;
 
-import com.jzajas.RatingSystem.Entities.Status;
 import com.jzajas.RatingSystem.Entities.User;
-import com.jzajas.RatingSystem.Exceptions.AccountNotApprovedException;
 import com.jzajas.RatingSystem.Exceptions.UserEmailNotFoundException;
 import com.jzajas.RatingSystem.Repositories.UserRepository;
-import com.jzajas.RatingSystem.Services.AuthService;
+import com.jzajas.RatingSystem.Services.Implementations.AuthServiceImpl;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -21,10 +19,10 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     private final UserRepository userRepository;
 
-    private final AuthService authService;
+    private final AuthServiceImpl authServiceImpl;
 
-    public CustomUserDetailsService(AuthService authService, UserRepository userRepository) {
-        this.authService = authService;
+    public CustomUserDetailsService(AuthServiceImpl authServiceImpl, UserRepository userRepository) {
+        this.authServiceImpl = authServiceImpl;
         this.userRepository = userRepository;
     }
 
@@ -35,7 +33,7 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .findByEmail(email)
                 .orElseThrow(() -> new UserEmailNotFoundException(email));
 
-        authService.isAccountApproved(user.getStatus());
+        authServiceImpl.isAccountApproved(user.getStatus());
 
         return new org.springframework.security.core.userdetails.User(
                 user.getEmail(),

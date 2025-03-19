@@ -1,9 +1,9 @@
 package com.jzajas.RatingSystem.Controllers;
 
-import com.jzajas.RatingSystem.DTO.Output.GameObjectDTO;
 import com.jzajas.RatingSystem.DTO.Input.GameObjectCreationDTO;
+import com.jzajas.RatingSystem.DTO.Output.GameObjectDTO;
 import com.jzajas.RatingSystem.Security.CustomSecurityExpressions;
-import com.jzajas.RatingSystem.Services.GameObjectService;
+import com.jzajas.RatingSystem.Services.Implementations.GameObjectServiceImpl;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,11 +17,11 @@ import java.util.List;
 @RequestMapping("/object")
 public class GameObjectController {
 
-    private final GameObjectService gameObjectService;
+    private final GameObjectServiceImpl gameObjectServiceImpl;
 
 
-    public GameObjectController(GameObjectService gameObjectService) {
-        this.gameObjectService = gameObjectService;
+    public GameObjectController(GameObjectServiceImpl gameObjectServiceImpl) {
+        this.gameObjectServiceImpl = gameObjectServiceImpl;
     }
 
     @PreAuthorize("hasRole('SELLER')")
@@ -29,27 +29,27 @@ public class GameObjectController {
     public ResponseEntity<Void> addNewGameObject(@Valid @RequestBody GameObjectCreationDTO dto,
                                                  Authentication authentication
     ) {
-        gameObjectService.createNewGameObject(dto, authentication);
+        gameObjectServiceImpl.createNewGameObject(dto, authentication);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @GetMapping("/")
     public ResponseEntity<List<GameObjectDTO>> getGameObjects() {
-        List<GameObjectDTO> allGameObjects = gameObjectService.getAllGameObjects();
+        List<GameObjectDTO> allGameObjects = gameObjectServiceImpl.getAllGameObjects();
         return ResponseEntity.ok(allGameObjects);
     }
 
     @PutMapping("/{objectId}")
     @PreAuthorize(CustomSecurityExpressions.GAME_OBJECT_OWNER_BY_ID_OR_ADMIN)
     public ResponseEntity<Void> editGameObject(@PathVariable Long objectId, @Valid @RequestBody GameObjectCreationDTO dto) {
-        gameObjectService.updateGameObject(objectId, dto);
+        gameObjectServiceImpl.updateGameObject(objectId, dto);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @DeleteMapping("/{objectId}")
     @PreAuthorize(CustomSecurityExpressions.GAME_OBJECT_OWNER_BY_ID_OR_ADMIN)
     public ResponseEntity<Void> deleteGameObject(@PathVariable Long objectId) {
-        gameObjectService.deleteGameObjectById(objectId);
+        gameObjectServiceImpl.deleteGameObjectById(objectId);
         return ResponseEntity.noContent().build();
     }
 }

@@ -4,6 +4,9 @@ import com.jzajas.RatingSystem.DTO.Input.UserRegistrationDTO;
 import com.jzajas.RatingSystem.Entities.User;
 import com.jzajas.RatingSystem.Mappers.DTOMapper;
 import com.jzajas.RatingSystem.Repositories.UserRepository;
+import com.jzajas.RatingSystem.Services.Implementations.AuthServiceImpl;
+import com.jzajas.RatingSystem.Services.Implementations.EmailServiceImpl;
+import com.jzajas.RatingSystem.Services.Implementations.UserServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -12,16 +15,16 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
-
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 @ExtendWith(MockitoExtension.class)
-public class UserServiceTest {
+public class UserServiceImplTest {
 
     @InjectMocks
-    private UserService userService;
+    private UserServiceImpl userServiceImpl;
 
     @Mock
     private UserRepository userRepository;
@@ -30,10 +33,10 @@ public class UserServiceTest {
     private PasswordEncoder encoder;
 
     @Mock
-    private AuthService authService;
+    private AuthServiceImpl authServiceImpl;
 
     @Mock
-    private EmailService emailService;
+    private EmailServiceImpl emailServiceImpl;
 
     @Mock
     private DTOMapper mapper;
@@ -99,14 +102,14 @@ public class UserServiceTest {
 
         Mockito.when(encoder.encode(password)).thenReturn(encodedPassword);
         Mockito.when(mapper.convertFromUserRegistrationDTOtoUser(dto)).thenReturn(user);
-        Mockito.when(authService.createAndSaveCreationToken(user.getEmail())).thenReturn("token");
+        Mockito.when(authServiceImpl.createAndSaveCreationToken(user.getEmail())).thenReturn("token");
 
-        userService.createNewUser(dto);
+        userServiceImpl.createNewUser(dto);
 
         Mockito.verify(userRepository).save(user);
         Mockito.verify(encoder).encode(password);
-        Mockito.verify(authService).createAndSaveCreationToken(email);
-        Mockito.verify(emailService).sendVerificationEmail(email, "token");
+        Mockito.verify(authServiceImpl).createAndSaveCreationToken(email);
+        Mockito.verify(emailServiceImpl).sendVerificationEmail(email, "token");
         assertEquals(encodedPassword, user.getPassword());
     }
 }

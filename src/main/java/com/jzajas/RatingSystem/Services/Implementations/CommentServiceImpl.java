@@ -1,17 +1,18 @@
-package com.jzajas.RatingSystem.Services;
+package com.jzajas.RatingSystem.Services.Implementations;
 
+import com.jzajas.RatingSystem.DTO.Input.CommentCreationDTO;
 import com.jzajas.RatingSystem.DTO.Input.UserAndCommentCreationDTO;
 import com.jzajas.RatingSystem.DTO.Output.CommentDTO;
-import com.jzajas.RatingSystem.DTO.Input.CommentCreationDTO;
 import com.jzajas.RatingSystem.Entities.*;
 import com.jzajas.RatingSystem.Exceptions.*;
 import com.jzajas.RatingSystem.Mappers.DTOMapper;
 import com.jzajas.RatingSystem.Repositories.AnonymousUserDetailsRepository;
 import com.jzajas.RatingSystem.Repositories.CommentRepository;
 import com.jzajas.RatingSystem.Repositories.UserRepository;
+import com.jzajas.RatingSystem.Services.Interfaces.CommentService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,7 +21,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-public class CommentService {
+@RequiredArgsConstructor
+public class CommentServiceImpl implements CommentService {
 
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
@@ -29,23 +31,13 @@ public class CommentService {
     private final BCryptPasswordEncoder encoder;
 
 
-    public CommentService(AnonymousUserDetailsRepository anonymousUserDetailsRepository,
-                          CommentRepository commentRepository, UserRepository userRepository, DTOMapper mapper, BCryptPasswordEncoder encoder) {
-        this.anonymousUserDetailsRepository = anonymousUserDetailsRepository;
-        this.commentRepository = commentRepository;
-        this.userRepository = userRepository;
-        this.mapper = mapper;
-        this.encoder = encoder;
-    }
-
-    @Transactional
+    @Override
     public void createNewComment(CommentCreationDTO dto, Long receiverId, Authentication authentication) {
         if (!isRatingValid(dto.getRating())) throw new InvalidRatingValueException(dto.getRating());
         Optional<User> receiver = userRepository.findById(receiverId);
         if (receiver.isEmpty() ||
                 receiver.get().getStatus() != Status.APPROVED ||
-                receiver.get().getRole() != Role.SELLER)
-        {
+                receiver.get().getRole() != Role.SELLER) {
             throw new InvalidReceiverException(receiverId);
         }
 
@@ -80,10 +72,11 @@ public class CommentService {
         commentRepository.save(comment);
     }
 
-    @Transactional
+    @Override
     public void createNewCommentWithUser(UserAndCommentCreationDTO dto) {
         if (!isRatingValid(dto.getRating())) throw new InvalidRatingValueException(dto.getRating());
-        if (userRepository.findByEmail(dto.getEmail()).isPresent()) throw new EmailAlreadyInUseException(dto.getEmail());
+        if (userRepository.findByEmail(dto.getEmail()).isPresent())
+            throw new EmailAlreadyInUseException(dto.getEmail());
 
         User user = mapper.convertFromUserAndCommentCreationDTOtoUser(dto);
         user.setPassword(encoder.encode(dto.getPassword()));
@@ -101,7 +94,7 @@ public class CommentService {
         commentRepository.save(comment);
     }
 
-    @Transactional(readOnly = true)
+    @Override
     public CommentDTO findCommentDTOById(Long id) {
         Comment comment = commentRepository
                 .findById(id)
@@ -109,22 +102,22 @@ public class CommentService {
         return mapper.convertToCommentDTO(comment);
     }
 
-    @Transactional(readOnly = true)
+    @Override
     public Comment findCommentById(Long id) {
         return commentRepository
                 .findById(id)
                 .orElseThrow(() -> new CommentNotFoundException(id));
     }
 
-    @Transactional(readOnly = true)
+    @Override
     public List<CommentDTO> findAllUserComments(Long id, boolean Posted) {
-        if(!userRepository.existsById(id)) throw new UserNotFoundException(id);
+        if (!userRepository.existsById(id)) throw new UserNotFoundException(id);
 
         List<Comment> allComments;
         if (Posted) {
-            allComments =  commentRepository.findAllPostedCommentsByUserId(id);
+            allComments = commentRepository.findAllPostedCommentsByUserId(id);
         } else {
-            allComments =  commentRepository.findAllReceivedCommentsByUserId(id);
+            allComments = commentRepository.findAllReceivedCommentsByUserId(id);
         }
 
         return allComments.stream()
@@ -132,7 +125,7 @@ public class CommentService {
                 .collect(Collectors.toList());
     }
 
-    @Transactional
+    @Override
     public void updateCommentById(Long commentId, CommentCreationDTO dto, String email) {
         Comment oldComment = findCommentById(commentId);
         if (oldComment.getAuthor() == null && !userRepository.isAdministrator(email)) {
@@ -148,7 +141,7 @@ public class CommentService {
         commentRepository.save(oldComment);
     }
 
-    @Transactional
+    @Override
     public void deleteCommentById(Long commentId, String email) {
         Comment comment = findCommentById(commentId);
         if (comment.getAuthor() == null && !userRepository.isAdministrator(email)) {

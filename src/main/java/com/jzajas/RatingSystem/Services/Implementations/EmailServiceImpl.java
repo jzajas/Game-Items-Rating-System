@@ -1,15 +1,18 @@
-package com.jzajas.RatingSystem.Services;
+package com.jzajas.RatingSystem.Services.Implementations;
 
 import com.jzajas.RatingSystem.Exceptions.MessageSendingException;
+import com.jzajas.RatingSystem.Services.Interfaces.EmailService;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 @Service
-public class EmailService {
+@RequiredArgsConstructor
+public class EmailServiceImpl implements EmailService {
 
     private static final String CONFIRMATION_LINK = "http://localhost:8080/auth/confirm?token=";
 
@@ -29,10 +32,7 @@ public class EmailService {
     private String sendingEmail;
 
 
-    public EmailService(JavaMailSender mailSender) {
-        this.mailSender = mailSender;
-    }
-
+    @Override
     public void sendVerificationEmail(String receiverEmail, String verificationCode) {
         try {
             MimeMessage message = createMimeMessage(
@@ -46,6 +46,7 @@ public class EmailService {
         }
     }
 
+    @Override
     public void sendResetEmail(String receiverEmail, String code, Long expirationTime) {
         String body = "Your password reset code is: " + code +
                 "\n\nThis code will expire in " + expirationTime + " minutes." +

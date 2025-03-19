@@ -2,8 +2,8 @@ package com.jzajas.RatingSystem.Controllers;
 
 import com.jzajas.RatingSystem.DTO.Input.ForgotPasswordRequestDTO;
 import com.jzajas.RatingSystem.DTO.Input.PasswordResetDTO;
-import com.jzajas.RatingSystem.Services.AuthService;
-import com.jzajas.RatingSystem.Services.UserService;
+import com.jzajas.RatingSystem.Services.Implementations.AuthServiceImpl;
+import com.jzajas.RatingSystem.Services.Implementations.UserServiceImpl;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,37 +14,37 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/auth")
 public class AuthController {
 
-    private final UserService userService;
+    private final UserServiceImpl userServiceImpl;
 
-    private final AuthService authService;
+    private final AuthServiceImpl authServiceImpl;
 
 
-    public AuthController(AuthService authService, UserService userService) {
-        this.authService = authService;
-        this.userService = userService;
+    public AuthController(AuthServiceImpl authServiceImpl, UserServiceImpl userServiceImpl) {
+        this.authServiceImpl = authServiceImpl;
+        this.userServiceImpl = userServiceImpl;
     }
 
     @PostMapping("/forgot_password")
     public ResponseEntity<Void> forgotPassword(@Valid @RequestBody ForgotPasswordRequestDTO dto, Authentication authentication) {
-        authService.sendResetCode(dto, authentication);
+        authServiceImpl.sendResetCode(dto, authentication);
         return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/reset")
     public ResponseEntity<Void> resetPassword(@Valid @RequestBody PasswordResetDTO dto) {
-        authService.resetPassword(dto);
+        authServiceImpl.resetPassword(dto);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/check_code")
     public ResponseEntity<Boolean> checkCode(@RequestParam(name = "code") String code, Authentication authentication) {
-        boolean valid = authService.checkCode(code, authentication);
+        boolean valid = authServiceImpl.checkCode(code, authentication);
         return ResponseEntity.ok(valid);
     }
 
     @GetMapping("/confirm")
     public ResponseEntity<Void> confirmEmail(@RequestParam(name = "token") String token) {
-        authService.confirmUserEmail(token);
+        authServiceImpl.confirmUserEmail(token);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

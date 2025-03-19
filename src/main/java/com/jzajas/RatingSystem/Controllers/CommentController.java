@@ -4,7 +4,7 @@ import com.jzajas.RatingSystem.DTO.Input.UserAndCommentCreationDTO;
 import com.jzajas.RatingSystem.DTO.Output.CommentDTO;
 import com.jzajas.RatingSystem.DTO.Input.CommentCreationDTO;
 import com.jzajas.RatingSystem.Security.CustomSecurityExpressions;
-import com.jzajas.RatingSystem.Services.CommentService;
+import com.jzajas.RatingSystem.Services.Implementations.CommentServiceImpl;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,11 +19,11 @@ import java.util.List;
 @RequestMapping("/users")
 public class CommentController {
 
-    private final CommentService commentService;
+    private final CommentServiceImpl commentServiceImpl;
 
 
-    public CommentController(CommentService commentService) {
-        this.commentService = commentService;
+    public CommentController(CommentServiceImpl commentServiceImpl) {
+        this.commentServiceImpl = commentServiceImpl;
     }
 
     @PreAuthorize("hasRole('SELLER') OR hasRole('ADMINISTRATOR') OR isAnonymous()")
@@ -33,7 +33,7 @@ public class CommentController {
             @Valid @RequestBody CommentCreationDTO dto,
             Authentication authentication
     ) {
-        commentService.createNewComment(dto, userId, authentication);
+        commentServiceImpl.createNewComment(dto, userId, authentication);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
@@ -41,25 +41,25 @@ public class CommentController {
     @PreAuthorize("isAnonymous()")
     @PostMapping("/comments/create")
     public ResponseEntity<Void> createCommentWithUser(@Valid @RequestBody UserAndCommentCreationDTO dto) {
-        commentService.createNewCommentWithUser(dto);
+        commentServiceImpl.createNewCommentWithUser(dto);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @GetMapping("/comments/{commentId}")
     public ResponseEntity<CommentDTO> getSpecificComment(@PathVariable Long commentId) {
-        CommentDTO comment = commentService.findCommentDTOById(commentId);
+        CommentDTO comment = commentServiceImpl.findCommentDTOById(commentId);
         return ResponseEntity.ok(comment);
     }
 
     @GetMapping("/{userId}/comments/posted")
     public ResponseEntity<List<CommentDTO>> getAllSellersPostedComments(@PathVariable Long userId) {
-        List<CommentDTO> allPostedComments = commentService.findAllUserComments(userId, true);
+        List<CommentDTO> allPostedComments = commentServiceImpl.findAllUserComments(userId, true);
         return ResponseEntity.ok(allPostedComments);
     }
 
     @GetMapping("/{userId}/comments/received")
     public ResponseEntity<List<CommentDTO>> getAllSellersReceivedComments(@PathVariable Long userId) {
-        List<CommentDTO> allReceivedComments = commentService.findAllUserComments(userId, false);
+        List<CommentDTO> allReceivedComments = commentServiceImpl.findAllUserComments(userId, false);
         return ResponseEntity.ok(allReceivedComments);
     }
 
@@ -71,7 +71,7 @@ public class CommentController {
             Authentication authentication
     ) {
         String userEmail = authentication.getName();
-        commentService.updateCommentById(commentId, dto, userEmail);
+        commentServiceImpl.updateCommentById(commentId, dto, userEmail);
         return new ResponseEntity<>(HttpStatus.OK);
 
     }
@@ -83,7 +83,7 @@ public class CommentController {
             Authentication authentication
     ) {
         String userEmail = authentication.getName();
-        commentService.deleteCommentById(commentId, userEmail);
+        commentServiceImpl.deleteCommentById(commentId, userEmail);
         return ResponseEntity.noContent().build();
     }
 }

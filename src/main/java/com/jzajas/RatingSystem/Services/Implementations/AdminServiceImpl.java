@@ -1,4 +1,4 @@
-package com.jzajas.RatingSystem.Services;
+package com.jzajas.RatingSystem.Services.Implementations;
 
 import com.jzajas.RatingSystem.DTO.Input.UserRegistrationDTO;
 import com.jzajas.RatingSystem.DTO.Output.PendingCommentDTO;
@@ -12,15 +12,18 @@ import com.jzajas.RatingSystem.Exceptions.UserNotFoundException;
 import com.jzajas.RatingSystem.Mappers.DTOMapper;
 import com.jzajas.RatingSystem.Repositories.CommentRepository;
 import com.jzajas.RatingSystem.Repositories.UserRepository;
-import org.springframework.transaction.annotation.Transactional;
+import com.jzajas.RatingSystem.Services.Interfaces.AdminService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class AdminService {
+@RequiredArgsConstructor
+public class AdminServiceImpl implements AdminService {
 
     private final DTOMapper mapper;
     private final PasswordEncoder encoder;
@@ -28,17 +31,10 @@ public class AdminService {
     private final CommentRepository commentRepository;
 
 
-    public AdminService(CommentRepository commentRepository, DTOMapper mapper,
-                        PasswordEncoder encoder, UserRepository userRepository) {
-        this.commentRepository = commentRepository;
-        this.mapper = mapper;
-        this.encoder = encoder;
-        this.userRepository = userRepository;
-    }
-
-    @Transactional
+    @Override
     public void createAdmin(UserRegistrationDTO dto) {
-        if (userRepository.findByEmail(dto.getEmail()).isPresent()) throw new EmailAlreadyInUseException(dto.getEmail());
+        if (userRepository.findByEmail(dto.getEmail()).isPresent())
+            throw new EmailAlreadyInUseException(dto.getEmail());
 
         User user = mapper.convertFromUserRegistrationDTOtoAdmin(dto);
         user.setPassword(encoder.encode(user.getPassword()));
@@ -46,7 +42,7 @@ public class AdminService {
         userRepository.save(user);
     }
 
-    @Transactional(readOnly = true)
+    @Override
     public List<PendingUserDTO> getAllPendingUsers() {
         return userRepository
                 .findAllUsersWithPendingStatus()
@@ -55,7 +51,7 @@ public class AdminService {
                 .collect(Collectors.toList());
     }
 
-    @Transactional(readOnly = true)
+    @Override
     public List<PendingCommentDTO> getAllPendingComments() {
         return commentRepository
                 .findAllCommentsWithPendingStatus()
@@ -64,28 +60,28 @@ public class AdminService {
                 .collect(Collectors.toList());
     }
 
-    @Transactional
+    @Override
     public void approveUser(Long id) {
         User user = findUserByID(id);
         user.setStatus(Status.APPROVED);
         userRepository.save(user);
     }
 
-    @Transactional
+    @Override
     public void declineUser(Long id) {
         User user = findUserByID(id);
         user.setStatus(Status.DECLINED);
         userRepository.save(user);
     }
 
-    @Transactional
+    @Override
     public void approveComment(Long id) {
         Comment comment = findCommentByID(id);
         comment.setStatus(Status.APPROVED);
         commentRepository.save(comment);
     }
 
-    @Transactional
+    @Override
     public void declineComment(Long id) {
         Comment comment = findCommentByID(id);
         comment.setStatus(Status.DECLINED);

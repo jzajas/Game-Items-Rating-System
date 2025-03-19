@@ -1,10 +1,10 @@
 package com.jzajas.RatingSystem.Controllers;
 
-import com.jzajas.RatingSystem.DTO.Output.UserDTO;
 import com.jzajas.RatingSystem.DTO.Input.UserRegistrationDTO;
+import com.jzajas.RatingSystem.DTO.Output.UserDTO;
 import com.jzajas.RatingSystem.DTO.Output.UserScoreDTO;
 import com.jzajas.RatingSystem.Entities.GameCategory;
-import com.jzajas.RatingSystem.Services.UserService;
+import com.jzajas.RatingSystem.Services.Implementations.UserServiceImpl;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,27 +18,27 @@ import java.util.List;
 @RequestMapping("/users")
 public class UserController {
 
-    private final UserService userService;
+    private final UserServiceImpl userServiceImpl;
 
-    public UserController(UserService userService) {
-        this.userService = userService;
+    public UserController(UserServiceImpl userServiceImpl) {
+        this.userServiceImpl = userServiceImpl;
     }
 
     @PostMapping("/register")
     public ResponseEntity<Void> createUser(@Valid @RequestBody UserRegistrationDTO dto) {
-        userService.createNewUser(dto);
+        userServiceImpl.createNewUser(dto);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @GetMapping("/{userId}")
     public ResponseEntity<UserDTO> getUser(@PathVariable Long userId) {
-        UserDTO userDTO = userService.findUserDTOById(userId);
+        UserDTO userDTO = userServiceImpl.findUserDTOById(userId);
         return ResponseEntity.ok(userDTO);
     }
 
     @GetMapping("/{userId}/score")
     public ResponseEntity<Double> getUserScore(@PathVariable Long userId) {
-        Double score = userService.calculateUserScore(userId);
+        Double score = userServiceImpl.calculateUserScore(userId);
         return ResponseEntity.ok(score);
     }
 
@@ -49,13 +49,13 @@ public class UserController {
             @RequestParam(defaultValue = "0") double from,
             @RequestParam(defaultValue = "10") double to
     ) {
-        List<UserScoreDTO> topSellers = userService.getTopSellers(display, category, from, to);
+        List<UserScoreDTO> topSellers = userServiceImpl.getTopSellers(display, category, from, to);
         return ResponseEntity.ok(topSellers);
     }
 
     @DeleteMapping("/delete")
     public ResponseEntity<Void> deleteAccount(Authentication authentication) {
-        userService.deleteUser(authentication);
+        userServiceImpl.deleteUser(authentication);
         return ResponseEntity.noContent().build();
     }
 }

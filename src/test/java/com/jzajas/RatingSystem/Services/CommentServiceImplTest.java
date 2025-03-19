@@ -11,6 +11,7 @@ import com.jzajas.RatingSystem.Exceptions.InvalidReceiverException;
 import com.jzajas.RatingSystem.Mappers.DTOMapper;
 import com.jzajas.RatingSystem.Repositories.CommentRepository;
 import com.jzajas.RatingSystem.Repositories.UserRepository;
+import com.jzajas.RatingSystem.Services.Implementations.CommentServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -23,12 +24,11 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-
 @ExtendWith(MockitoExtension.class)
-public class CommentServiceTest {
+public class CommentServiceImplTest {
 
     @InjectMocks
-    CommentService commentService;
+    CommentServiceImpl commentServiceImpl;
 
     @Mock
     private CommentRepository commentRepository;
@@ -52,7 +52,7 @@ public class CommentServiceTest {
         dto.setRating(111);
 
         assertThrows(InvalidRatingValueException.class,
-                () -> commentService.createNewComment(dto, id, authentication)
+                () -> commentServiceImpl.createNewComment(dto, id, authentication)
         );
     }
 
@@ -66,7 +66,7 @@ public class CommentServiceTest {
         dto.setRating(-1);
 
         assertThrows(InvalidRatingValueException.class,
-                () -> commentService.createNewComment(dto, id, authentication)
+                () -> commentServiceImpl.createNewComment(dto, id, authentication)
         );
     }
 
@@ -82,7 +82,7 @@ public class CommentServiceTest {
         Mockito.when(userRepository.findById(id)).thenReturn(Optional.empty());
 
         assertThrows(InvalidReceiverException.class,
-                () -> commentService.createNewComment(dto, id, authentication)
+                () -> commentServiceImpl.createNewComment(dto, id, authentication)
         );
     }
 
@@ -120,7 +120,7 @@ public class CommentServiceTest {
         Mockito.when(userRepository.findById(id)).thenReturn(Optional.of(receiver));
 
         assertThrows(BadRequestException.class,
-                () -> commentService.createNewComment(dto, id, authentication)
+                () -> commentServiceImpl.createNewComment(dto, id, authentication)
         );
     }
 
@@ -154,7 +154,7 @@ public class CommentServiceTest {
         Mockito.when(mockAuthentication.getName()).thenReturn(authorEmail);
         Mockito.when(userRepository.findByEmail(author.getEmail())).thenReturn(Optional.of(author));
 
-        commentService.createNewComment(dto, receiverId, mockAuthentication);
+        commentServiceImpl.createNewComment(dto, receiverId, mockAuthentication);
 
         Mockito.verify(userRepository).findById(receiverId);
         Mockito.verify(userRepository).findByEmail(authorEmail);
