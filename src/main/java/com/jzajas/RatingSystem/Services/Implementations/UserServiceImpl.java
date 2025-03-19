@@ -1,11 +1,11 @@
 package com.jzajas.RatingSystem.Services.Implementations;
 
+import com.jzajas.RatingSystem.AOP.LogExecutionTime;
 import com.jzajas.RatingSystem.DTO.Input.UserRegistrationDTO;
 import com.jzajas.RatingSystem.DTO.Output.UserDTO;
 import com.jzajas.RatingSystem.DTO.Output.UserScoreDTO;
 import com.jzajas.RatingSystem.Entities.*;
 import com.jzajas.RatingSystem.Exceptions.EmailAlreadyInUseException;
-import com.jzajas.RatingSystem.Exceptions.UserEmailNotFoundException;
 import com.jzajas.RatingSystem.Exceptions.UserNotFoundException;
 import com.jzajas.RatingSystem.Mappers.DTOMapper;
 import com.jzajas.RatingSystem.Repositories.CommentRepository;
@@ -37,6 +37,7 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
+    @LogExecutionTime
     public void createNewUser(UserRegistrationDTO dto) {
         if (emailAlreadyExists(dto.getEmail())) throw new EmailAlreadyInUseException(dto.getEmail());
 
@@ -56,20 +57,22 @@ public class UserServiceImpl implements UserService {
         return mapper.convertToUserDTO(user);
     }
 
-    @Override
-    public User findUserByEmail(String email) {
-        return userRepository
-                .findByEmail(email)
-                .orElseThrow(() -> new UserEmailNotFoundException(email));
-    }
+//    @Override
+//    public User findUserByEmail(String email) {
+//        return userRepository
+//                .findByEmail(email)
+//                .orElseThrow(() -> new UserEmailNotFoundException(email));
+//    }
 
     @Override
+    @LogExecutionTime
     public List<Comment> getAllCommentsForUserById(Long id) {
         if (!userRepository.existsById(id)) throw new UserNotFoundException(id);
         return commentRepository.findAllReceivedCommentsByUserId(id);
     }
 
     @Override
+    @LogExecutionTime
     public List<UserScoreDTO> getTopSellers(int display, GameCategory category, double from, double to) {
         if (category == null) {
             return userRepository.findTopSellersByRating(display, from, to);
@@ -89,6 +92,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @LogExecutionTime
     public double calculateUserScore(Long id) {
         Optional<User> user = userRepository.findById(id);
         if (user.isEmpty() || user.get().getStatus() != Status.APPROVED || user.get().getRole() != Role.SELLER) {

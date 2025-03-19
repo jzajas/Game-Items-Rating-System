@@ -27,8 +27,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException)
-            throws IOException, ServletException
-    {
+            throws IOException, ServletException {
         response.setContentType("application/json");
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
@@ -37,8 +36,6 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
 
         if (user.isEmpty()) {
             response.getWriter().write("Missing or incorrect credentials. Please provide correct username and password");
-        } else if (userRepository.isAdministrator(email)){
-            response.getWriter().write("Administrator cannot perform this action");
         } else if (user.get().getStatus() == Status.PENDING_EMAIL) {
             response.getWriter().write("Account is not approved. Please check your email");
         } else if (user.get().getStatus() == Status.DECLINED) {

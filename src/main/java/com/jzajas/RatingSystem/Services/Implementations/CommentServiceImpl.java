@@ -1,5 +1,6 @@
 package com.jzajas.RatingSystem.Services.Implementations;
 
+import com.jzajas.RatingSystem.AOP.LogExecutionTime;
 import com.jzajas.RatingSystem.DTO.Input.CommentCreationDTO;
 import com.jzajas.RatingSystem.DTO.Input.UserAndCommentCreationDTO;
 import com.jzajas.RatingSystem.DTO.Output.CommentDTO;
@@ -11,6 +12,7 @@ import com.jzajas.RatingSystem.Repositories.CommentRepository;
 import com.jzajas.RatingSystem.Repositories.UserRepository;
 import com.jzajas.RatingSystem.Services.Interfaces.CommentService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -32,6 +34,7 @@ public class CommentServiceImpl implements CommentService {
 
 
     @Override
+    @LogExecutionTime
     public void createNewComment(CommentCreationDTO dto, Long receiverId, Authentication authentication) {
         if (!isRatingValid(dto.getRating())) throw new InvalidRatingValueException(dto.getRating());
         Optional<User> receiver = userRepository.findById(receiverId);
@@ -73,6 +76,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
+    @LogExecutionTime
     public void createNewCommentWithUser(UserAndCommentCreationDTO dto) {
         if (!isRatingValid(dto.getRating())) throw new InvalidRatingValueException(dto.getRating());
         if (userRepository.findByEmail(dto.getEmail()).isPresent())
@@ -99,6 +103,7 @@ public class CommentServiceImpl implements CommentService {
         Comment comment = commentRepository
                 .findById(id)
                 .orElseThrow(() -> new CommentNotFoundException(id));
+        if (comment.getStatus() != Status.APPROVED) throw new CommentNotFoundException(id);
         return mapper.convertToCommentDTO(comment);
     }
 
@@ -110,6 +115,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
+    @LogExecutionTime
     public List<CommentDTO> findAllUserComments(Long id, boolean Posted) {
         if (!userRepository.existsById(id)) throw new UserNotFoundException(id);
 
@@ -126,6 +132,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMINISTRATOR') or @CustomSecurityExpressions.isCommentOwnerOrAdmin(#commentId, authentication)")
     public void updateCommentById(Long commentId, CommentCreationDTO dto, String email) {
         Comment oldComment = findCommentById(commentId);
         if (oldComment.getAuthor() == null && !userRepository.isAdministrator(email)) {
@@ -142,6 +149,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMINISTRATOR') or @CustomSecurityExpressions.isCommentOwnerOrAdmin(#commentId, authentication)")
     public void deleteCommentById(Long commentId, String email) {
         Comment comment = findCommentById(commentId);
         if (comment.getAuthor() == null && !userRepository.isAdministrator(email)) {

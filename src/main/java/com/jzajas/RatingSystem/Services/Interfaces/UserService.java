@@ -5,7 +5,6 @@ import com.jzajas.RatingSystem.DTO.Output.UserDTO;
 import com.jzajas.RatingSystem.DTO.Output.UserScoreDTO;
 import com.jzajas.RatingSystem.Entities.Comment;
 import com.jzajas.RatingSystem.Entities.GameCategory;
-import com.jzajas.RatingSystem.Entities.User;
 import org.springframework.security.core.Authentication;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,8 +18,8 @@ public interface UserService {
     @Transactional(readOnly = true)
     UserDTO findUserDTOById(Long id);
 
-    @Transactional(readOnly = true)
-    User findUserByEmail(String email);
+//    @Transactional(readOnly = true)
+//    User findUserByEmail(String email);
 
     @Transactional(readOnly = true)
     List<Comment> getAllCommentsForUserById(Long id);

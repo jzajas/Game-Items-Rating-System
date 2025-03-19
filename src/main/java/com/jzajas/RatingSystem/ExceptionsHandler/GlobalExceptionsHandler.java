@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
-//TODO split into few exception handlers?
 
 @Slf4j
 @RestControllerAdvice
@@ -98,7 +97,7 @@ public class GlobalExceptionsHandler {
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<String> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex) {
         log.info("Method argument mismatch exception occurred: ", ex);
-        return new ResponseEntity<> (
+        return new ResponseEntity<>(
                 "name: " + ex.getName() + "\nmessage: " + ex.getMessage(),
                 HttpStatus.BAD_REQUEST
         );

@@ -1,14 +1,12 @@
 package com.jzajas.RatingSystem.Controllers;
 
+import com.jzajas.RatingSystem.DTO.Input.CommentCreationDTO;
 import com.jzajas.RatingSystem.DTO.Input.UserAndCommentCreationDTO;
 import com.jzajas.RatingSystem.DTO.Output.CommentDTO;
-import com.jzajas.RatingSystem.DTO.Input.CommentCreationDTO;
-import com.jzajas.RatingSystem.Security.CustomSecurityExpressions;
 import com.jzajas.RatingSystem.Services.Implementations.CommentServiceImpl;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,7 +24,7 @@ public class CommentController {
         this.commentServiceImpl = commentServiceImpl;
     }
 
-    @PreAuthorize("hasRole('SELLER') OR hasRole('ADMINISTRATOR') OR isAnonymous()")
+    //    @PreAuthorize("hasRole('SELLER') OR hasRole('ADMINISTRATOR') OR isAnonymous()")
     @PostMapping("/{userId}/comments")
     public ResponseEntity<Void> addCommentForUser(
             @PathVariable Long userId,
@@ -37,8 +35,7 @@ public class CommentController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-//    TODO useless @PreAuthorize ?
-    @PreAuthorize("isAnonymous()")
+    //    @PreAuthorize("isAnonymous()")
     @PostMapping("/comments/create")
     public ResponseEntity<Void> createCommentWithUser(@Valid @RequestBody UserAndCommentCreationDTO dto) {
         commentServiceImpl.createNewCommentWithUser(dto);
@@ -63,7 +60,6 @@ public class CommentController {
         return ResponseEntity.ok(allReceivedComments);
     }
 
-    @PreAuthorize(CustomSecurityExpressions.COMMENT_HAS_OWNER_BY_ID_OR_ADMIN)
     @PutMapping("/comments/{commentId}")
     public ResponseEntity<Void> updateComment(
             @PathVariable Long commentId,
@@ -76,7 +72,6 @@ public class CommentController {
 
     }
 
-    @PreAuthorize(CustomSecurityExpressions.COMMENT_HAS_OWNER_BY_ID_OR_ADMIN)
     @DeleteMapping("/comments/{commentId}")
     public ResponseEntity<Void> deleteComment(
             @PathVariable Long commentId,

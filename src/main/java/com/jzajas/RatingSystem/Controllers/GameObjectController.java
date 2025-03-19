@@ -2,7 +2,6 @@ package com.jzajas.RatingSystem.Controllers;
 
 import com.jzajas.RatingSystem.DTO.Input.GameObjectCreationDTO;
 import com.jzajas.RatingSystem.DTO.Output.GameObjectDTO;
-import com.jzajas.RatingSystem.Security.CustomSecurityExpressions;
 import com.jzajas.RatingSystem.Services.Implementations.GameObjectServiceImpl;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -40,14 +39,12 @@ public class GameObjectController {
     }
 
     @PutMapping("/{objectId}")
-    @PreAuthorize(CustomSecurityExpressions.GAME_OBJECT_OWNER_BY_ID_OR_ADMIN)
     public ResponseEntity<Void> editGameObject(@PathVariable Long objectId, @Valid @RequestBody GameObjectCreationDTO dto) {
         gameObjectServiceImpl.updateGameObject(objectId, dto);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @DeleteMapping("/{objectId}")
-    @PreAuthorize(CustomSecurityExpressions.GAME_OBJECT_OWNER_BY_ID_OR_ADMIN)
     public ResponseEntity<Void> deleteGameObject(@PathVariable Long objectId) {
         gameObjectServiceImpl.deleteGameObjectById(objectId);
         return ResponseEntity.noContent().build();

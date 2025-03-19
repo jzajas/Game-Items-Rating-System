@@ -1,5 +1,6 @@
 package com.jzajas.RatingSystem.Services.Implementations;
 
+import com.jzajas.RatingSystem.AOP.LogExecutionTime;
 import com.jzajas.RatingSystem.DTO.Input.GameObjectCreationDTO;
 import com.jzajas.RatingSystem.DTO.Output.GameObjectDTO;
 import com.jzajas.RatingSystem.Entities.GameObject;
@@ -12,6 +13,7 @@ import com.jzajas.RatingSystem.Repositories.GameObjectRepository;
 import com.jzajas.RatingSystem.Repositories.UserRepository;
 import com.jzajas.RatingSystem.Services.Interfaces.GameObjectService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +31,7 @@ public class GameObjectServiceImpl implements GameObjectService {
 
 
     @Override
+    @LogExecutionTime
     public void createNewGameObject(GameObjectCreationDTO dto, Authentication authentication) {
         Optional<User> user = userRepository.findByEmail(authentication.getName());
         if (user.get().getStatus() != Status.APPROVED) {
@@ -47,6 +50,7 @@ public class GameObjectServiceImpl implements GameObjectService {
     }
 
     @Override
+    @LogExecutionTime
     public List<GameObjectDTO> getAllGameObjects() {
         List<GameObject> allObjects = gameObjectRepository.findAll();
         return allObjects
@@ -56,6 +60,8 @@ public class GameObjectServiceImpl implements GameObjectService {
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMINISTRATOR') or " +
+            "@CustomSecurityExpressions.isGameObjectOwnerOrAdmin(#objectId, authentication)")
     public void updateGameObject(Long objectId, GameObjectCreationDTO dto) {
         GameObject oldGameObject = getGameObjectByID(objectId);
         oldGameObject.setTitle(dto.getTitle());
@@ -65,7 +71,9 @@ public class GameObjectServiceImpl implements GameObjectService {
     }
 
     @Override
-    public void deleteGameObjectById(Long gameObjectId) {
-        gameObjectRepository.deleteById(gameObjectId);
+    @PreAuthorize("hasRole('ADMINISTRATOR') or " +
+            "@CustomSecurityExpressions.isGameObjectOwnerOrAdmin(#objectId, authentication)")
+    public void deleteGameObjectById(Long objectId) {
+        gameObjectRepository.deleteById(objectId);
     }
 }

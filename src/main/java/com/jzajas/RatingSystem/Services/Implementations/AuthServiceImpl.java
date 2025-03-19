@@ -1,5 +1,6 @@
 package com.jzajas.RatingSystem.Services.Implementations;
 
+import com.jzajas.RatingSystem.AOP.LogExecutionTime;
 import com.jzajas.RatingSystem.DTO.Input.ForgotPasswordRequestDTO;
 import com.jzajas.RatingSystem.DTO.Input.PasswordResetDTO;
 import com.jzajas.RatingSystem.Entities.Status;
@@ -33,6 +34,7 @@ public class AuthServiceImpl implements AuthService {
 
 
     @Override
+    @LogExecutionTime
     public String createAndSaveCreationToken(String email) {
         String code = generateCode();
         redisTemplate.opsForValue().set(code, email, Duration.ofMinutes(ACCOUNT_CONFIRMATION_CODE_EXPIRATION_TIME));
@@ -40,6 +42,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    @LogExecutionTime
     public void sendResetCode(ForgotPasswordRequestDTO dto, Authentication authentication) {
         if (authentication != null && !Objects.equals(authentication.getName(), dto.getEmail())) {
             throw new BadRequestException("Logged in user email is different from the one in the request");
@@ -55,6 +58,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    @LogExecutionTime
     public void resetPassword(PasswordResetDTO dto) {
         String email = redisTemplate.opsForValue().get(dto.getCode());
 
@@ -73,7 +77,6 @@ public class AuthServiceImpl implements AuthService {
         if (!Objects.equals(authentication.getName(), redisTemplate.opsForValue().get(code))) {
             throw new BadRequestException("Provided key does not exist or it does not belong to you");
         }
-
         if (redisTemplate.hasKey(code)) return "Code is valid";
         return "Code is invalid";
     }

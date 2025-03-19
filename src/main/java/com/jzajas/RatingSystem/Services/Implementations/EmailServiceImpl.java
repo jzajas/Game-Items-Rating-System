@@ -1,5 +1,6 @@
 package com.jzajas.RatingSystem.Services.Implementations;
 
+import com.jzajas.RatingSystem.AOP.LogExecutionTime;
 import com.jzajas.RatingSystem.Exceptions.MessageSendingException;
 import com.jzajas.RatingSystem.Services.Interfaces.EmailService;
 import jakarta.mail.MessagingException;
@@ -33,6 +34,7 @@ public class EmailServiceImpl implements EmailService {
 
 
     @Override
+    @LogExecutionTime
     public void sendVerificationEmail(String receiverEmail, String verificationCode) {
         try {
             MimeMessage message = createMimeMessage(
@@ -47,6 +49,7 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
+    @LogExecutionTime
     public void sendResetEmail(String receiverEmail, String code, Long expirationTime) {
         String body = "Your password reset code is: " + code +
                 "\n\nThis code will expire in " + expirationTime + " minutes." +
