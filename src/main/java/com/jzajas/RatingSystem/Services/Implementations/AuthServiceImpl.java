@@ -69,11 +69,13 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public boolean checkCode(String code, Authentication authentication) {
+    public String checkCodeValidity(String code, Authentication authentication) {
         if (!Objects.equals(authentication.getName(), redisTemplate.opsForValue().get(code))) {
             throw new BadRequestException("Provided key does not exist or it does not belong to you");
         }
-        return redisTemplate.hasKey(code);
+
+        if (redisTemplate.hasKey(code)) return "Code is valid";
+        return "Code is invalid";
     }
 
     @Override

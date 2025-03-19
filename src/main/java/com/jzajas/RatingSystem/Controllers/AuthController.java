@@ -37,9 +37,9 @@ public class AuthController {
     }
 
     @GetMapping("/check_code")
-    public ResponseEntity<Boolean> checkCode(@RequestParam(name = "code") String code, Authentication authentication) {
-        boolean valid = authServiceImpl.checkCode(code, authentication);
-        return ResponseEntity.ok(valid);
+    public ResponseEntity<String> checkCode(@RequestParam(name = "code") String code, Authentication authentication) {
+        String response = authServiceImpl.checkCodeValidity(code, authentication);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/confirm")

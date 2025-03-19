@@ -17,7 +17,7 @@ public interface AuthService {
     void resetPassword(PasswordResetDTO dto);
 
     @Transactional(readOnly = true)
-    boolean checkCode(String code, Authentication authentication);
+    String checkCodeValidity(String code, Authentication authentication);
 
     @Transactional
     void confirmUserEmail(String token);
