@@ -91,7 +91,9 @@ public class AuthServiceImpl implements AuthService {
     }
 
     public void isAccountApproved(Status status) {
-        if (status == Status.PENDING_EMAIL || status == Status.DECLINED) throw new AccountNotApprovedException();
+        if (status == Status.PENDING_EMAIL || status == Status.DECLINED) {
+            throw new AccountNotApprovedException("This account in not approved");
+        }
     }
 
     private String generateCode() {

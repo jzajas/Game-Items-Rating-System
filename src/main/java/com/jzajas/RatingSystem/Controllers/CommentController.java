@@ -24,7 +24,6 @@ public class CommentController {
         this.commentServiceImpl = commentServiceImpl;
     }
 
-    //    @PreAuthorize("hasRole('SELLER') OR hasRole('ADMINISTRATOR') OR isAnonymous()")
     @PostMapping("/{userId}/comments")
     public ResponseEntity<Void> addCommentForUser(
             @PathVariable Long userId,
@@ -35,7 +34,6 @@ public class CommentController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    //    @PreAuthorize("isAnonymous()")
     @PostMapping("/comments/create")
     public ResponseEntity<Void> createCommentWithUser(@Valid @RequestBody UserAndCommentCreationDTO dto) {
         commentServiceImpl.createNewCommentWithUser(dto);

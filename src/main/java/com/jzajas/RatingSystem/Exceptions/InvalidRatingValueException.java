@@ -1,12 +1,6 @@
 package com.jzajas.RatingSystem.Exceptions;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
-
-//@ResponseStatus(HttpStatus.BAD_REQUEST)
-public class InvalidRatingValueException extends RuntimeException{
-
-    public InvalidRatingValueException() {}
+public class InvalidRatingValueException extends RuntimeException {
 
     public InvalidRatingValueException(String message) {
         super(message);
@@ -14,13 +8,5 @@ public class InvalidRatingValueException extends RuntimeException{
 
     public InvalidRatingValueException(int rating) {
         super(String.valueOf(rating));
-    }
-
-    public InvalidRatingValueException(Throwable tr) {
-        super(tr);
-    }
-
-    public InvalidRatingValueException(String message, Throwable tr) {
-        super(message, tr);
     }
 }

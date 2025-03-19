@@ -11,8 +11,4 @@ public class AccountNotApprovedException extends AuthenticationException {
     public AccountNotApprovedException(String message) {
         super(message);
     }
-
-    public AccountNotApprovedException(String message, Throwable tr) {
-        super(message, tr);
-    }
 }

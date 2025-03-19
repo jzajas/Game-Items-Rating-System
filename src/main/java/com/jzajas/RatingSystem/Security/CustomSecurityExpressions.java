@@ -2,7 +2,6 @@ package com.jzajas.RatingSystem.Security;
 
 import com.jzajas.RatingSystem.Entities.Comment;
 import com.jzajas.RatingSystem.Entities.GameObject;
-import com.jzajas.RatingSystem.Repositories.UserRepository;
 import com.jzajas.RatingSystem.Services.Implementations.GameObjectServiceImpl;
 import com.jzajas.RatingSystem.Services.Interfaces.CommentService;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +19,6 @@ public class CustomSecurityExpressions {
 
     private final CommentService commentService;
     private final GameObjectServiceImpl gameObjectService;
-    private final UserRepository userRepository;
 
 
     public boolean isCommentOwnerOrAdmin(Long commentId, Authentication authentication) {
