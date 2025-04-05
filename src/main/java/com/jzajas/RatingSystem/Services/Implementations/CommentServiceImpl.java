@@ -82,6 +82,7 @@ public class CommentServiceImpl implements CommentService {
         if (userRepository.findByEmail(dto.getEmail()).isPresent())
             throw new EmailAlreadyInUseException(dto.getEmail());
 
+//        TODO fix this user creation -> id in endpoint for receiver?
         User user = mapper.convertFromUserAndCommentCreationDTOtoUser(dto);
         user.setPassword(encoder.encode(dto.getPassword()));
         User savedUser = userRepository.save(user);
@@ -138,13 +139,13 @@ public class CommentServiceImpl implements CommentService {
         if (oldComment.getAuthor() == null && !userRepository.isAdministrator(email)) {
             throw new BadRequestException("Cannot update anonymous comment");
         }
+        if (!isRatingValid(dto.getRating())) throw new InvalidRatingValueException(dto.getRating());
 
-        if (isRatingValid(dto.getRating())) {
-            oldComment.setRating(dto.getRating());
+        if (dto.getMessage() != null) {
             oldComment.setMessage(dto.getMessage());
-        } else {
-            throw new InvalidRatingValueException(dto.getRating());
         }
+        oldComment.setRating(dto.getRating());
+
         commentRepository.save(oldComment);
     }
 

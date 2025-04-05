@@ -33,7 +33,7 @@ public class DTOMapper {
         dto.setCreatedAt(user.getCreatedAt());
         dto.setRole(user.getRole());
 
-        return  dto;
+        return dto;
     }
 
     public User convertFromUserRegistrationDTOtoUser(UserRegistrationDTO dto) {
@@ -99,8 +99,8 @@ public class DTOMapper {
             dto.setAuthorFirstName(comment.getAuthor().getFirstName());
             dto.setAuthorLastName(comment.getAuthor().getLastName());
         } else {
-        dto.setAuthorFirstName(comment.getAnonymousUserDetails().getFirstName());
-        dto.setAuthorLastName(comment.getAnonymousUserDetails().getLastName());
+            dto.setAuthorFirstName(comment.getAnonymousUserDetails().getFirstName());
+            dto.setAuthorLastName(comment.getAnonymousUserDetails().getLastName());
         }
 
         dto.setMessage(comment.getMessage());
@@ -117,7 +117,9 @@ public class DTOMapper {
     public Comment convertFromCommentCreationDTONotAnonymous(CommentCreationDTO dto) {
         Comment comment = new Comment();
 
-        comment.setMessage(dto.getMessage());
+        if (dto.getMessage() != null) {
+            comment.setMessage(dto.getMessage());
+        }
         comment.setRating(dto.getRating());
 
         return comment;
@@ -126,7 +128,9 @@ public class DTOMapper {
     public Comment convertFromUserAndCommentCreationDTOtoComment(UserAndCommentCreationDTO dto) {
         Comment comment = new Comment();
 
-        comment.setMessage(dto.getMessage());
+        if (dto.getMessage() != null) {
+            comment.setMessage(dto.getMessage());
+        }
         comment.setRating(dto.getRating());
         comment.setStatus(Status.PENDING_ADMIN);
         comment.setAuthor(null);

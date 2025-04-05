@@ -12,8 +12,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class UserAndCommentCreationDTO {
 
-    @NotNull(message = "Message required")
-    @NotBlank(message = "Message required")
     private String message;
 
     @NotNull(message = "Rating required")
