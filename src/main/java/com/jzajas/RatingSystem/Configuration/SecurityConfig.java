@@ -36,7 +36,7 @@ public class SecurityConfig {
                         .requestMatchers("/auth/check_code").authenticated()
                         .requestMatchers("/auth/*").permitAll()
                         .requestMatchers("/users/*/comments").permitAll()
-                        .requestMatchers("/users/comments/create").permitAll()
+                        .requestMatchers("/users/*/comments/create").permitAll()
                         .requestMatchers(HttpMethod.GET).permitAll()
                         .anyRequest().authenticated()
                 )

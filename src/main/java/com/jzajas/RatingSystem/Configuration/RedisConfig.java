@@ -10,6 +10,7 @@ import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactor
 import org.springframework.data.redis.core.StringRedisTemplate;
 
 @Configuration
+@Profile("!cloud")
 public class RedisConfig {
 
     @Value("${spring.redis.host:redis}")
@@ -19,14 +20,12 @@ public class RedisConfig {
     private int redisPort;
 
     @Bean
-    @Profile("!cloud")
     public RedisConnectionFactory localRedisConnectionFactory() {
         RedisStandaloneConfiguration config = new RedisStandaloneConfiguration(redisHost, redisPort);
         return new LettuceConnectionFactory(config);
     }
 
     @Bean
-    @Profile("!cloud")
     public StringRedisTemplate stringRedisTemplate(RedisConnectionFactory redisConnectionFactory) {
         return new StringRedisTemplate(redisConnectionFactory);
     }
