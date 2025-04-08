@@ -34,7 +34,7 @@ import java.util.Date;
                 "COALESCE(AVG(c.rating), 0) as avg_score, " +
                 "COUNT(c.id) as comment_count " +
                 "FROM users u " +
-                "INNER JOIN game_objects g ON u.id = g.author_id " +
+                "INNER JOIN game_objects g ON u.id = g.author " +
                 "LEFT JOIN comments c ON u.id = c.receiver " +
                 "WHERE g.category = :category AND u.status = 'APPROVED' and u.role = 'SELLER' and c.status = 'APPROVED' " +
                 "GROUP BY u.id " +

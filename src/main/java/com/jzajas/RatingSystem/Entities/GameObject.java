@@ -27,7 +27,7 @@ public class GameObject {
 
     @ManyToOne
     @JoinColumn(name = "author", nullable = false)
-    private User authorID;
+    private User author;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "category", nullable = false)

@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface CommentRepository extends JpaRepository<Comment, Long> {
 
-    @Query(value = "SELECT * FROM comments WHERE author_id = :userId AND status = 'APPROVED'", nativeQuery = true)
+    @Query(value = "SELECT * FROM comments WHERE author = :userId AND status = 'APPROVED'", nativeQuery = true)
     List<Comment> findAllPostedCommentsByUserId(@Param("userId") Long userId);
 
     @Query(value = "SELECT * FROM comments WHERE receiver = :userId AND status = 'APPROVED'", nativeQuery = true)
@@ -21,6 +21,6 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     List<Comment> findAllCommentsWithPendingStatus();
 
     @Modifying
-    @Query(value = "DELETE FROM comments c WHERE c.author_id = :id OR c.receiver = :id", nativeQuery = true)
+    @Query(value = "DELETE FROM comments c WHERE c.author = :id OR c.receiver = :id", nativeQuery = true)
     void deleteAllUserComments(@Param("id") Long id);
 }

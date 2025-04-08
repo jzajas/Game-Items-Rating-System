@@ -10,6 +10,6 @@ import org.springframework.data.repository.query.Param;
 public interface GameObjectRepository extends JpaRepository<GameObject, Long> {
 
     @Modifying
-    @Query(value = "DELETE FROM game_objects g WHERE g.author_id = :id", nativeQuery = true)
+    @Query(value = "DELETE FROM game_objects g WHERE g.author = :id", nativeQuery = true)
     void deleteAllUserGameObjects(@Param("id") Long id);
 }
