@@ -38,6 +38,8 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
             response.getWriter().write("Missing or incorrect credentials. Please provide correct username and password");
         } else if (user.get().getStatus() == Status.PENDING_EMAIL) {
             response.getWriter().write("Account is not approved. Please check your email");
+        } else if (user.get().getStatus() == Status.PENDING_ADMIN) {
+            response.getWriter().write("Account is not approved. Please wait for admin to approve your account");
         } else if (user.get().getStatus() == Status.DECLINED) {
             response.getWriter().write("Account is declined.");
         } else {

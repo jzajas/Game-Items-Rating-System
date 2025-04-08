@@ -13,13 +13,8 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class CustomSecurityExpressions {
 
-    public static final String GAME_OBJECT_OWNER_BY_ID_OR_ADMIN =
-            "@gameObjectService.getGameObjectByID(#objectId).getAuthorID().getEmail() == authentication.name or " +
-                    "hasRole('ADMINISTRATOR')";
-
     private final CommentService commentService;
     private final GameObjectServiceImpl gameObjectService;
-
 
     public boolean isCommentOwnerOrAdmin(Long commentId, Authentication authentication) {
         if (authentication == null) return false;
@@ -35,7 +30,7 @@ public class CustomSecurityExpressions {
 
         GameObject gameObject = gameObjectService.getGameObjectByID(objectId);
         return gameObject != null &&
-                gameObject.getAuthorID() != null &&
-                gameObject.getAuthorID().getEmail().equals(authentication.getName());
+                gameObject.getAuthor() != null &&
+                gameObject.getAuthor().getEmail().equals(authentication.getName());
     }
 }
