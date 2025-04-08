@@ -15,7 +15,7 @@ public interface CommentService {
     void createNewComment(CommentCreationDTO dto, Long receiverId, Authentication authentication);
 
     @Transactional
-    void createNewCommentWithUser(UserAndCommentCreationDTO dto);
+    void createNewCommentWithUser(UserAndCommentCreationDTO dto, Long receiverID);
 
     @Transactional(readOnly = true)
     CommentDTO findCommentDTOById(Long id);

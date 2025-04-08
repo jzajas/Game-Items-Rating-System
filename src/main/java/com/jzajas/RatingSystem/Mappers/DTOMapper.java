@@ -67,7 +67,7 @@ public class DTOMapper {
         user.setLastName(dto.getLastName());
         user.setEmail(dto.getEmail());
         user.setRole(Role.SELLER);
-        user.setStatus(Status.PENDING_ADMIN);
+        user.setStatus(Status.PENDING_EMAIL);
 
         return user;
     }

@@ -34,9 +34,12 @@ public class CommentController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @PostMapping("/comments/create")
-    public ResponseEntity<Void> createCommentWithUser(@Valid @RequestBody UserAndCommentCreationDTO dto) {
-        commentServiceImpl.createNewCommentWithUser(dto);
+    @PostMapping("/{receiverId}/comments/create")
+    public ResponseEntity<Void> createCommentWithUser(
+            @PathVariable Long receiverId,
+            @Valid @RequestBody UserAndCommentCreationDTO dto
+    ) {
+        commentServiceImpl.createNewCommentWithUser(dto, receiverId);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 

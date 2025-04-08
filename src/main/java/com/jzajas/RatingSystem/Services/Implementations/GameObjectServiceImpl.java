@@ -38,7 +38,7 @@ public class GameObjectServiceImpl implements GameObjectService {
             throw new AccountNotApprovedException("Account is not approved");
         }
         GameObject newGameObject = mapper.convertFromGameObjectRegistrationDTO(dto);
-        newGameObject.setAuthorID(user.get());
+        newGameObject.setAuthor(user.get());
         gameObjectRepository.save(newGameObject);
     }
 

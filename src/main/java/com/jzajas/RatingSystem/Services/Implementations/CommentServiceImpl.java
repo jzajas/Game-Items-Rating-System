@@ -26,6 +26,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class CommentServiceImpl implements CommentService {
 
+    private final EmailServiceImpl emailService;
+    private final AuthServiceImpl authService;
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
     private final AnonymousUserDetailsRepository anonymousUserDetailsRepository;
@@ -38,11 +40,7 @@ public class CommentServiceImpl implements CommentService {
     public void createNewComment(CommentCreationDTO dto, Long receiverId, Authentication authentication) {
         if (!isRatingValid(dto.getRating())) throw new InvalidRatingValueException(dto.getRating());
         Optional<User> receiver = userRepository.findById(receiverId);
-        if (receiver.isEmpty() ||
-                receiver.get().getStatus() != Status.APPROVED ||
-                receiver.get().getRole() != Role.SELLER) {
-            throw new InvalidReceiverException(receiverId);
-        }
+        if (!receiverExistsCheck(receiver, receiverId)) throw new InvalidReceiverException(receiverId);
 
         Comment comment = mapper.convertFromCommentCreationDTONotAnonymous(dto);
 
@@ -77,26 +75,26 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @LogExecutionTime
-    public void createNewCommentWithUser(UserAndCommentCreationDTO dto) {
+    public void createNewCommentWithUser(UserAndCommentCreationDTO dto, Long receiverId) {
         if (!isRatingValid(dto.getRating())) throw new InvalidRatingValueException(dto.getRating());
         if (userRepository.findByEmail(dto.getEmail()).isPresent())
             throw new EmailAlreadyInUseException(dto.getEmail());
 
-//        TODO fix this user creation -> id in endpoint for receiver?
-        User user = mapper.convertFromUserAndCommentCreationDTOtoUser(dto);
-        user.setPassword(encoder.encode(dto.getPassword()));
-        User savedUser = userRepository.save(user);
+        Optional<User> receiver = userRepository.findById(receiverId);
+        if (!receiverExistsCheck(receiver, receiverId)) throw new InvalidReceiverException(receiverId);
+
+        User author = mapper.convertFromUserAndCommentCreationDTOtoUser(dto);
+        author.setPassword(encoder.encode(dto.getPassword()));
+        User savedAuthor = userRepository.save(author);
 
         Comment comment = mapper.convertFromUserAndCommentCreationDTOtoComment(dto);
-        comment.setReceiver(savedUser);
+        comment.setReceiver(receiver.get());
+        comment.setAuthor(savedAuthor);
 
-        AnonymousUserDetails anonymousUser = new AnonymousUserDetails();
-        anonymousUser.setFirstName(dto.getFirstName());
-        anonymousUser.setLastName(dto.getLastName());
-        AnonymousUserDetails savedAnonymousUser = anonymousUserDetailsRepository.save(anonymousUser);
-
-        comment.setAnonymousUserDetails(savedAnonymousUser);
         commentRepository.save(comment);
+
+        String token = authService.createAndSaveCreationToken(savedAuthor.getEmail());
+        emailService.sendVerificationEmail(savedAuthor.getEmail(), token);
     }
 
     @Override
@@ -161,5 +159,15 @@ public class CommentServiceImpl implements CommentService {
 
     private boolean isRatingValid(int rating) {
         return rating >= 1 && rating <= 10;
+    }
+
+    private boolean receiverExistsCheck(Optional<User> receiver, Long receiverId) {
+        if (receiver.isEmpty() ||
+                receiver.get().getStatus() != Status.APPROVED ||
+                receiver.get().getRole() != Role.SELLER) {
+            throw new InvalidReceiverException(receiverId);
+        }
+
+        return true;
     }
 }
